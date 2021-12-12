@@ -22,11 +22,9 @@ else()
   message(FATAL_ERROR "Couldn't parse version from src/game/version.h")
 endif()
 
-if(VERSION_PATCH STREQUAL "0")
-  project(DDNet VERSION ${VERSION_MAJOR}.${VERSION_MINOR})
-else()
-  project(DDNet VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
-endif()
+project(Infclass
+  VERSION 0.1.7
+)
 
 set(ORIGINAL_CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH})
 set(ORIGINAL_CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES})
