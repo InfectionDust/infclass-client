@@ -4202,12 +4202,12 @@ IGraphics::CTextureHandle *CGameClient::GetInfclassTexturePtrForDamageType(EDama
 {
 	switch(DamageType)
 	{
-	case EDamageType::SNIPER_RIFLE:
-		return &m_InfclassSkin.m_SpriteSniperRifle;
-	case EDamageType::SCIENTIST_LASER:
-		return &m_InfclassSkin.m_SpriteScientistLaser;
-	case EDamageType::MEDIC_SHOTGUN:
-		return &m_InfclassSkin.m_SpriteMedicShotgun;
+//	case EDamageType::SNIPER_RIFLE:
+//		return &m_InfclassSkin.m_SpriteSniperRifle;
+//	case EDamageType::SCIENTIST_LASER:
+//		return &m_InfclassSkin.m_SpriteScientistLaser;
+//	case EDamageType::MEDIC_SHOTGUN:
+//		return &m_InfclassSkin.m_SpriteMedicShotgun;
 
 	case EDamageType::LASER_WALL:
 		return &m_InfclassSkin.m_SpriteLaserWall;
@@ -4215,16 +4215,16 @@ IGraphics::CTextureHandle *CGameClient::GetInfclassTexturePtrForDamageType(EDama
 		return &m_InfclassSkin.m_SpriteSoldierBomb;
 	case EDamageType::SCIENTIST_MINE:
 		return &m_InfclassSkin.m_SpriteScientistMine;
-	case EDamageType::BIOLOGIST_MINE:
-		return &m_InfclassSkin.m_SpriteBiologistMine;
+//	case EDamageType::BIOLOGIST_MINE:
+//		return &m_InfclassSkin.m_SpriteBiologistMine;
 	case EDamageType::MERCENARY_BOMB:
 		return &m_InfclassSkin.m_SpriteMercenaryBomb;
-	case EDamageType::WHITE_HOLE:
-		return &m_InfclassSkin.m_SpriteWhiteHole;
-	case EDamageType::TURRET_DESTRUCTION:
-		return &m_InfclassSkin.m_SpriteTurretDestruction;
-	case EDamageType::TURRET_LASER:
-		return &m_InfclassSkin.m_SpriteTurretLaser;
+//	case EDamageType::WHITE_HOLE:
+//		return &m_InfclassSkin.m_SpriteWhiteHole;
+//	case EDamageType::TURRET_DESTRUCTION:
+//		return &m_InfclassSkin.m_SpriteTurretDestruction;
+//	case EDamageType::TURRET_LASER:
+//		return &m_InfclassSkin.m_SpriteTurretLaser;
 
 	case EDamageType::BOOMER_EXPLOSION:
 		return &m_InfclassSkin.m_SpriteBoomerExplosion;
