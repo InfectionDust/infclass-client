@@ -389,6 +389,8 @@ void CGameClient::OnInit()
 	{
 		if(i == IMAGE_GAME)
 			LoadGameSkin(g_Config.m_ClAssetGame);
+		else if(i == IMAGE_INFCLASS)
+			LoadInfclassSkin(g_Config.m_ClAssetInfclass);
 		else if(i == IMAGE_EMOTICONS)
 			LoadEmoticonsSkin(g_Config.m_ClAssetEmoticons);
 		else if(i == IMAGE_PARTICLES)
@@ -3867,6 +3869,45 @@ void CGameClient::LoadGameSkin(const char *pPath, bool AsDir)
 		m_GameSkinLoaded = true;
 	}
 	ImgInfo.Free();
+}
+
+void CGameClient::LoadInfclassSkin(const char *pPath, bool AsDir)
+{
+	if(m_InfclassSkinLoaded)
+	{
+		m_InfclassSkinLoaded = false;
+	}
+
+	char aPath[IO_MAX_PATH_LENGTH];
+	bool IsDefault = false;
+	if(str_comp(pPath, "default") == 0)
+	{
+		str_format(aPath, sizeof(aPath), "%s", g_pData->m_aImages[IMAGE_INFCLASS].m_pFilename);
+		IsDefault = true;
+	}
+	else
+	{
+		if(AsDir)
+			str_format(aPath, sizeof(aPath), "assets/infclass/%s/%s", pPath, g_pData->m_aImages[IMAGE_INFCLASS].m_pFilename);
+		else
+			str_format(aPath, sizeof(aPath), "assets/infclass/%s.png", pPath);
+	}
+
+	CImageInfo ImgInfo;
+	bool PngLoaded = Graphics()->LoadPng(ImgInfo, aPath, IStorage::TYPE_ALL);
+	if(!PngLoaded && !IsDefault)
+	{
+		if(AsDir)
+			LoadGameSkin("default");
+		else
+			LoadGameSkin(pPath, true);
+	}
+	else if(PngLoaded)
+	{
+		m_InfclassSkinLoaded = true;
+
+		ImgInfo.Free();
+	}
 }
 
 void CGameClient::LoadEmoticonsSkin(const char *pPath, bool AsDir)
