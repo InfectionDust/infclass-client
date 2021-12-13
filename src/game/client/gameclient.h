@@ -654,6 +654,7 @@ public:
 	protocol7::CNetObjHandler *GetNetObjHandler7() override;
 
 	void LoadGameSkin(const char *pPath, bool AsDir = false);
+	void LoadInfclassSkin(const char *pPath, bool AsDir = false);
 	void LoadEmoticonsSkin(const char *pPath, bool AsDir = false);
 	void LoadParticlesSkin(const char *pPath, bool AsDir = false);
 	void LoadHudSkin(const char *pPath, bool AsDir = false);
@@ -747,6 +748,13 @@ public:
 
 	SClientGameSkin m_GameSkin;
 	bool m_GameSkinLoaded = false;
+
+	struct SClientInfclassSkin
+	{
+	};
+
+	SClientInfclassSkin m_InfclassSkin;
+	bool m_InfclassSkinLoaded;
 
 	struct SClientParticlesSkin
 	{
