@@ -9,3 +9,5 @@
 #define MACRO_CONFIG_STR(Name, ScriptName, Len, Def, Save, Desc);
 
 #endif
+
+MACRO_CONFIG_STR(ClAssetInfclass, cl_asset_infclass, 50, "default", CFGFLAG_SAVE | CFGFLAG_CLIENT, "The asset for infclass")
