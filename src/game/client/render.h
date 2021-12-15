@@ -78,6 +78,7 @@ public:
 		m_OriginalRenderSkin.Reset();
 		m_ColorableRenderSkin.Reset();
 		m_SkinMetrics.Reset();
+		m_InfectedHook = false;
 		m_CustomColoredSkin = false;
 		m_BloodColor = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
 		m_ColorBody = ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f);
@@ -119,6 +120,7 @@ public:
 
 	CSkin::SSkinMetrics m_SkinMetrics;
 
+	bool m_InfectedHook = false;
 	bool m_CustomColoredSkin;
 	ColorRGBA m_BloodColor;
 

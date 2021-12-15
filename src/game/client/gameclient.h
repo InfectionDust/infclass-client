@@ -799,6 +799,10 @@ public:
 		IGraphics::CTextureHandle m_SpriteDryingHook;
 		IGraphics::CTextureHandle m_SpriteInfectionTile;
 		IGraphics::CTextureHandle m_SpriteGameInfection;
+
+		// weapons and hook
+		IGraphics::CTextureHandle m_SpriteHookChain;
+		IGraphics::CTextureHandle m_SpriteHookHead;
 	};
 
 	SClientInfclassSkin m_InfclassSkin;
