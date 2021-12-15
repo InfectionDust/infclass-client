@@ -382,6 +382,9 @@ container.sprites.Add(Sprite("inf_game_infection", set_infclass, 48,12,16,4))
 container.sprites.Add(Sprite("hook_chain", set_game, 2,0,1,1))
 container.sprites.Add(Sprite("hook_head", set_game, 3,0,2,1))
 
+container.sprites.Add(Sprite("inf_hook_chain", set_infclass, 56,24,2,2))
+container.sprites.Add(Sprite("inf_hook_head", set_infclass, 58,24,4,2))
+
 container.sprites.Add(Sprite("weapon_ninja_muzzle1", set_game, 25,0,7,4))
 container.sprites.Add(Sprite("weapon_ninja_muzzle2", set_game, 25,4,7,4))
 container.sprites.Add(Sprite("weapon_ninja_muzzle3", set_game, 25,8,7,4))
