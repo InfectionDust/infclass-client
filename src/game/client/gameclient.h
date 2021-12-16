@@ -431,6 +431,7 @@ public:
 
 		int m_InfClassPlayerFlags;
 		int m_InfClassPlayerClass;
+		bool m_InfClassCustomSkin;
 
 		char m_aName[MAX_NAME_LENGTH];
 		char m_aClan[MAX_CLAN_LENGTH];
