@@ -2593,9 +2593,15 @@ void CGameClient::CClientData::UpdateSkinInfo()
 	}
 
 	const auto &&ApplySkinProperties = [&]() {
+		bool UseCustomColor = m_UseCustomColor;
+		if(SkinDescriptor.m_Flags & CSkinDescriptor::FLAG_IC_CUSTOM)
+		{
+			UseCustomColor = m_InfClassPlayerFlags & INFCLASS_PLAYER_FLAG_INFECTED;
+		}
+
 		if(SkinDescriptor.m_Flags & CSkinDescriptor::FLAG_SIX)
 		{
-			m_pSkinInfo->TeeRenderInfo().ApplyColors(m_UseCustomColor, m_ColorBody, m_ColorFeet);
+			m_pSkinInfo->TeeRenderInfo().ApplyColors(UseCustomColor, m_ColorBody, m_ColorFeet);
 		}
 		if(SkinDescriptor.m_Flags & CSkinDescriptor::FLAG_SEVEN)
 		{
@@ -2779,7 +2785,13 @@ CSkinDescriptor CGameClient::CClientData::ToSkinDescriptor() const
 	if(m_Active)
 	{
 		SkinDescriptor.m_Flags |= CSkinDescriptor::FLAG_SIX;
-		str_copy(SkinDescriptor.m_aSkinName, m_aSkinName);
+
+		switch(m_InfClassPlayerClass)
+		{
+		default:
+			str_copy(SkinDescriptor.m_aSkinName, m_aSkinName);
+			break;
+		}
 	}
 
 	CTranslationContext::CClientData &TranslatedClient = m_pGameClient->m_pClient->m_TranslationContext.m_aClients[ClientId()];
@@ -3592,7 +3604,12 @@ void CGameClient::ProcessInfClassPlayerInfo(int ClientId, const CNetObj_InfClass
 	CClientData *pClient = &m_aClients[ClientId];
 
 	pClient->m_InfClassPlayerFlags = pPlayerData->m_Flags;
+	if(pClient->m_InfClassPlayerClass == pPlayerData->m_Class)
+		return;
+
 	pClient->m_InfClassPlayerClass = pPlayerData->m_Class;
+
+	pClient->UpdateRenderInfo();
 }
 
 void CGameClient::Echo(const char *pString)

@@ -42,6 +42,16 @@ CSkins::CSkins() :
 	m_PlaceholderSkin.m_Metrics.m_Feet.m_MaxHeight = 32;
 }
 
+bool IsInfclassSkin(const char *pName)
+{
+	constexpr static const char *INFCLASS_SKINS[] = {
+		"",
+	};
+
+	auto SkinComparator = [pName](const char *pInfclassSkin) { return str_comp(pName, pInfclassSkin) == 0; };
+	return std::any_of(std::begin(INFCLASS_SKINS), std::end(INFCLASS_SKINS), SkinComparator);
+}
+
 bool CSkins::IsVanillaSkin(const char *pName)
 {
 	return std::any_of(std::begin(VANILLA_SKINS), std::end(VANILLA_SKINS), [pName](const char *pVanillaSkin) { return str_comp(pName, pVanillaSkin) == 0; });
@@ -80,7 +90,7 @@ int CSkins::SkinScan(const char *pName, int IsDir, int DirType, void *pUser)
 		return 0;
 	}
 
-	if(g_Config.m_ClVanillaSkinsOnly && !IsVanillaSkin(aSkinName))
+	if(g_Config.m_ClVanillaSkinsOnly && !IsVanillaSkin(aSkinName) && !IsInfclassSkin(aSkinName))
 		return 0;
 
 	char aPath[IO_MAX_PATH_LENGTH];
