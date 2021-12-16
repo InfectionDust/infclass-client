@@ -40,6 +40,8 @@ public:
 	{
 		FLAG_SIX = 1,
 		FLAG_SEVEN = 2,
+
+		FLAG_IC_CUSTOM = 0x10,
 	};
 	unsigned m_Flags;
 
