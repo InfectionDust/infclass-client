@@ -47,8 +47,9 @@ CSkins::CSkinContainer::CSkinContainer(CSkins *pSkins, const char *pName, EType 
 	str_copy(m_aName, pName);
 	str_utf8_tolower(m_aName, m_aNormalizedName, sizeof(m_aNormalizedName));
 	m_Vanilla = IsVanillaSkin(m_aName);
+	m_Infclass = IsInfclassSkin(m_aName);
 	m_Special = IsSpecialSkin(m_aName);
-	m_AlwaysLoaded = m_Vanilla; // Vanilla skins are loaded immediately and not unloaded
+	m_AlwaysLoaded = m_Vanilla || m_Infclass; // Vanilla skins are loaded immediately and not unloaded
 }
 
 CSkins::CSkinContainer::~CSkinContainer()
@@ -121,7 +122,7 @@ CSkins::CSkinContainer::EState CSkins::CSkinContainer::DetermineInitialState() c
 		// Load immediately if it should always be loaded
 		return EState::PENDING;
 	}
-	else if((g_Config.m_ClVanillaSkinsOnly && !m_Vanilla) ||
+	else if((g_Config.m_ClVanillaSkinsOnly && !(m_Vanilla || m_Infclass)) ||
 		(m_Type == EType::DOWNLOAD && !g_Config.m_ClDownloadSkins))
 	{
 		// Fail immediately if it shouldn't be loaded
@@ -201,6 +202,17 @@ CSkins::CSkins() :
 bool CSkins::IsVanillaSkin(const char *pName)
 {
 	return std::any_of(std::begin(VANILLA_SKINS), std::end(VANILLA_SKINS), [pName](const char *pVanillaSkin) {
+		return str_utf8_comp_nocase(pName, pVanillaSkin) == 0;
+	});
+}
+
+bool CSkins::IsInfclassSkin(const char *pName)
+{
+	constexpr static const char *INFCLASS_SKINS[] = {
+		"",
+	};
+
+	return std::any_of(std::begin(INFCLASS_SKINS), std::end(INFCLASS_SKINS), [pName](const char *pVanillaSkin) {
 		return str_utf8_comp_nocase(pName, pVanillaSkin) == 0;
 	});
 }
