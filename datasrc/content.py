@@ -375,7 +375,7 @@ container.sprites.Add(Sprite("inf_infection_hammer", set_infclass, 48,12,16,16))
 container.sprites.Add(Sprite("inf_bite", set_infclass, 48,12,16,16))
 container.sprites.Add(Sprite("inf_boomer_explosion", set_infclass, 48,4,3,4))
 container.sprites.Add(Sprite("inf_slug_slime", set_infclass, 48,8,4,4))
-container.sprites.Add(Sprite("inf_drying_hook", set_infclass, 48,0,12,4))
+container.sprites.Add(Sprite("inf_drying_hook", set_infclass, 48,0,11,4))
 container.sprites.Add(Sprite("inf_infection_tile", set_infclass, 48,12,16,4))
 container.sprites.Add(Sprite("inf_game_infection", set_infclass, 48,12,16,4))
 
