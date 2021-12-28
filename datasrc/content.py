@@ -362,7 +362,7 @@ container.sprites.Add(Sprite("inf_looper_laser", set_infclass, 0,16,20,4))
 container.sprites.Add(Sprite("inf_mercenary_gun", set_infclass, 0,20,20,4))
 container.sprites.Add(Sprite("inf_mercenary_grenade", set_infclass, 0,24,20,4))
 
-container.sprites.Add(Sprite("inf_laser_wall", set_infclass, 20,0,2,4))
+container.sprites.Add(Sprite("inf_laser_wall", set_infclass, 20,0,6,4))
 container.sprites.Add(Sprite("inf_soldier_bomb", set_infclass, 20,4,3,4))
 container.sprites.Add(Sprite("inf_scientist_mine", set_infclass, 20,8,4,4))
 container.sprites.Add(Sprite("inf_biologist_mine", set_infclass, 20,12,24,4))
