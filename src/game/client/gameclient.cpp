@@ -1468,6 +1468,7 @@ static CGameInfo GetGameInfo(const CNetObj_GameInfoEx *pInfoEx, int InfoExSize, 
 	Info.m_EntitiesDDRace = DDRace;
 	Info.m_EntitiesRace = Race;
 	Info.m_EntitiesFNG = FNG;
+	Info.m_EntitiesInfclass = Infclass;
 	Info.m_EntitiesVanilla = Vanilla;
 	Info.m_EntitiesBW = BlockWorlds;
 	Info.m_Race = Race;
