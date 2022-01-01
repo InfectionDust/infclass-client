@@ -72,7 +72,8 @@ class CHud : public CComponent
 	void PrepareAmmoHealthAndArmorQuads();
 	void PrepareInfclassHudQuads();
 	void RenderAmmoHealthAndArmor(const CNetObj_Character *pCharacter);
-	void RenderStatusIcons(int ClientID);
+	void RenderStatusIcons(int ClientId);
+	void RenderObjectOwnerIcons(int ClientId);
 
 	void PreparePlayerStateQuads();
 	void RenderPlayerState(int ClientId);

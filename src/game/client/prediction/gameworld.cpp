@@ -562,6 +562,10 @@ void CGameWorld::NetObjAdd(int ObjId, int ObjType, const void *pObjData, const C
 			InsertEntity(pEnt);
 		}
 	}
+	else if(ObjType == NETOBJTYPE_INFCLASSOBJECT)
+	{
+
+	}
 }
 
 void CGameWorld::NetObjEnd()
