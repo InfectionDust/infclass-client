@@ -466,6 +466,8 @@ public:
 
 		std::shared_ptr<CManagedTeeRenderInfo> m_pSkinInfo = nullptr; // this is what the server reports
 		CTeeRenderInfo m_RenderInfo; // this is what we use
+		vec2 m_aOwnerIconPositions[16];
+		std::size_t m_OwnerIcons;
 
 		float m_Angle;
 		bool m_Active;
