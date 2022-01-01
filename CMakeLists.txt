@@ -1419,6 +1419,7 @@ set(EXPECTED_DATA
   editor/entities_clear/ddrace.png
   editor/entities_clear/f-ddrace.png
   editor/entities_clear/fng.png
+  editor/entities_clear/infclass.png
   editor/entities_clear/race.png
   editor/entities_clear/vanilla.png
   editor/front.png
