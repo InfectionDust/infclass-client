@@ -94,6 +94,7 @@ public:
 	bool m_EntitiesDDRace;
 	bool m_EntitiesRace;
 	bool m_EntitiesFNG;
+	bool m_EntitiesInfclass;
 	bool m_EntitiesVanilla;
 	bool m_EntitiesBW;
 	bool m_EntitiesFDDrace;
