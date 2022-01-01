@@ -360,10 +360,64 @@ void CItems::RenderLaser(const CLaserData *pCurrent, bool IsPredicted)
 	}
 }
 
+void CItems::RenderInfclassObject(const CNetObj_InfClassObject *pCurrent, bool IsPredicted)
+{
+	int LocalCID = m_pClient->m_aLocalIds[g_Config.m_ClDummy];
+	int SpecCID = m_pClient->m_Snap.m_SpecInfo.m_SpectatorId;
+	int CameraCID = m_pClient->m_Snap.m_SpecInfo.m_Active ? SpecCID : LocalCID;
+
+	vec2 Pos(pCurrent->m_X, pCurrent->m_Y);
+
+#if 1
+	if((CameraCID >= 0) && (pCurrent->m_Owner == CameraCID))
+	{
+		// Do not render the icon here, render it in HUD instead.
+		bool TakeSecondPos = (pCurrent->m_Flags & INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION) && (pCurrent->m_Y2 > pCurrent->m_Y);
+		vec2 IndicatorPos = TakeSecondPos ? vec2(pCurrent->m_X2, pCurrent->m_Y2) : Pos;
+
+		if(pCurrent->m_Flags & INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION)
+		{
+			float Offset = 24;
+			if(TakeSecondPos)
+			{
+				IndicatorPos += normalize(IndicatorPos - vec2(pCurrent->m_X, pCurrent->m_Y)) * Offset;
+			}
+			else
+			{
+				IndicatorPos += normalize(IndicatorPos - vec2(pCurrent->m_X2, pCurrent->m_Y2)) * Offset;
+			}
+		}
+		CGameClient::CClientData &ClientData = m_pClient->m_aClients[CameraCID];
+		std::size_t &Icons = ClientData.m_OwnerIcons;
+		if(Icons == std::size(ClientData.m_aOwnerIconPositions))
+			return;
+
+		ClientData.m_aOwnerIconPositions[Icons] = IndicatorPos;
+		++Icons;
+	}
+#else
+	if(pCurrent->m_Owner == LocalCID)
+	{
+		CTeeRenderInfo RenderInfo = m_pClient->m_aClients[LocalCID].m_RenderInfo;
+		RenderInfo.m_Size = 32;
+
+		bool TakeSecondPos = (pCurrent->m_Flags & INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION) && (pCurrent->m_Y2 > pCurrent->m_Y);
+		vec2 IndicatorPos = TakeSecondPos ? vec2(pCurrent->m_X2, pCurrent->m_Y2) : Pos;
+		const vec2 Offset(0, pCurrent->m_Flags & INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION ? 16 : 0);
+		RenderTools()->RenderTee(CAnimState::GetIdle(), &RenderInfo, EMOTE_HAPPY, vec2(1, 0), IndicatorPos + Offset);
+	}
+#endif
+}
+
 void CItems::OnRender()
 {
 	if(Client()->State() != IClient::STATE_ONLINE && Client()->State() != IClient::STATE_DEMOPLAYBACK)
 		return;
+
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+	{
+		m_pClient->m_aClients[i].m_OwnerIcons = 0;
+	}
 
 	bool IsSuper = m_pClient->IsLocalCharSuper();
 	int Ticks = Client()->GameTick(g_Config.m_ClDummy) % Client()->GameTickSpeed();
@@ -519,6 +573,11 @@ void CItems::OnRender()
 			}
 
 			RenderLaser(&Data);
+		}
+		else if(Item.m_Type == NETOBJTYPE_INFCLASSOBJECT)
+		{
+			const CNetObj_InfClassObject *pObject = static_cast<const CNetObj_InfClassObject *>(pData);
+			RenderInfclassObject(pObject);
 		}
 	}
 
