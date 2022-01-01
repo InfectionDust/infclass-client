@@ -21,6 +21,7 @@ const char *const gs_apModEntitiesNames[] = {
 	"race",
 	"blockworlds",
 	"fng",
+	"infclass",
 	"vanilla",
 	"f-ddrace",
 };
@@ -205,6 +206,8 @@ static EMapImageModType GetEntitiesModType(const CGameInfo &GameInfo)
 		return MAP_IMAGE_MOD_TYPE_BLOCKWORLDS;
 	else if(GameInfo.m_EntitiesFNG)
 		return MAP_IMAGE_MOD_TYPE_FNG;
+	else if(GameInfo.m_EntitiesInfclass)
+		return MAP_IMAGE_MOD_TYPE_INFCLASS;
 	else if(GameInfo.m_EntitiesVanilla)
 		return MAP_IMAGE_MOD_TYPE_VANILLA;
 	else
