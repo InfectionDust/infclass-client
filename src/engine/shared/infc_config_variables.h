@@ -11,3 +11,4 @@
 #endif
 
 MACRO_CONFIG_STR(ClAssetInfclass, cl_asset_infclass, 50, "default", CFGFLAG_SAVE | CFGFLAG_CLIENT, "The asset for infclass")
+MACRO_CONFIG_INT(ClInfStatusSize, infc_status_size, 16, 4, 64, CFGFLAG_SAVE | CFGFLAG_CLIENT, "The size of infclass status icons")

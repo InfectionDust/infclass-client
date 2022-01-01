@@ -808,6 +808,8 @@ public:
 		// weapons and hook
 		IGraphics::CTextureHandle m_SpriteHookChain;
 		IGraphics::CTextureHandle m_SpriteHookHead;
+
+		IGraphics::CTextureHandle m_SpriteStatusHookable;
 	};
 
 	SClientInfclassSkin m_InfclassSkin;

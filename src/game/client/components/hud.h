@@ -70,7 +70,9 @@ class CHud : public CComponent
 	void RenderTeambalanceWarning();
 
 	void PrepareAmmoHealthAndArmorQuads();
+	void PrepareInfclassHudQuads();
 	void RenderAmmoHealthAndArmor(const CNetObj_Character *pCharacter);
+	void RenderStatusIcons(int ClientID);
 
 	void PreparePlayerStateQuads();
 	void RenderPlayerState(int ClientId);
@@ -159,6 +161,8 @@ private:
 	int m_PracticeModeOffset;
 	int m_Team0ModeOffset;
 	int m_LockModeOffset;
+
+	int m_IcStatusIconOffset;
 };
 
 #endif
