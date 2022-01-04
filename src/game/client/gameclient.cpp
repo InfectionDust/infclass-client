@@ -4462,10 +4462,10 @@ IGraphics::CTextureHandle *CGameClient::GetInfclassTexturePtrForDamageType(EDama
 		return &m_InfclassSkin.m_SpriteMercenaryBomb;
 //	case EDamageType::WHITE_HOLE:
 //		return &m_InfclassSkin.m_SpriteWhiteHole;
-//	case EDamageType::TURRET_DESTRUCTION:
-//		return &m_InfclassSkin.m_SpriteTurretDestruction;
-//	case EDamageType::TURRET_LASER:
-//		return &m_InfclassSkin.m_SpriteTurretLaser;
+	case EDamageType::TURRET_DESTRUCTION:
+		return &m_InfclassSkin.m_SpriteTurretDestruction;
+	case EDamageType::TURRET_LASER:
+		return &m_InfclassSkin.m_SpriteTurretLaser;
 
 	case EDamageType::BOOMER_EXPLOSION:
 		return &m_InfclassSkin.m_SpriteBoomerExplosion;
