@@ -13,6 +13,7 @@
 #include <engine/shared/config.h>
 
 #include <game/localization.h>
+#include <game/version.h>
 
 #include <limits>
 
@@ -172,6 +173,43 @@ void CUi::OnCursorMove(float X, float Y)
 	}
 
 	m_UpdatedMouseDelta += vec2(X, Y);
+}
+
+const char *CUi::ReplaceHardcodedGameName(char *pDest, const char *pSrc, int DestSize)
+{
+	if(pDest == pSrc)
+	{
+		static char aBuf[1024];
+		if(sizeof(aBuf) < static_cast<size_t>(DestSize))
+		{
+			dbg_msg("GUI", "Unable to replace hardcoded game name: message too long: %d", DestSize);
+			return pSrc;
+		}
+		str_copy(aBuf, pSrc, sizeof(aBuf));
+		pSrc = aBuf;
+	}
+	// For pSrc = "Loading DDNet Client"
+	const char *pHardcodedDDNet = str_find(pSrc, "DDNet");
+	int offset = pHardcodedDDNet - pSrc;
+	// pDest = "Loading "
+	str_copy(pDest, pSrc, DestSize);
+
+	// pDest = "Loading " + "GAME_NAME"
+	str_copy(pDest + offset, GAME_NAME, DestSize - offset);
+
+	// "Loading " + "GAME_NAME" " Client"
+	// '-1' is to overwrite null termination (sizeof(GAME_NAME) is the number of characters + null termination)
+	str_copy(pDest + offset + sizeof(GAME_NAME) - 1, pSrc + (offset + sizeof("DDNet")) - 1, DestSize - offset - sizeof(GAME_NAME) - 1);
+
+	return pDest;
+}
+
+const char *CUi::ReplaceHardcodedGameName(const char *pSrc)
+{
+	static char aBuffer[256];
+	ReplaceHardcodedGameName(aBuffer, pSrc, sizeof(aBuffer));
+
+	return aBuffer;
 }
 
 void CUi::Update(vec2 MouseWorldPos)
