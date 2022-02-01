@@ -40,6 +40,7 @@
 #include "components/freezebars.h"
 #include "components/ghost.h"
 #include "components/hud.h"
+#include "components/infc_binds.h"
 #include "components/infomessages.h"
 #include "components/items.h"
 #include "components/mapimages.h"
@@ -140,6 +141,7 @@ public:
 	CMotd m_Motd;
 	CBroadcast m_Broadcast;
 	CGameConsole m_GameConsole;
+	CInfCBinds m_InfCBinds;
 	CBinds m_Binds;
 	CParticles m_Particles;
 	CMenus m_Menus;
