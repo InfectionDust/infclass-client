@@ -14,6 +14,7 @@ class IConfigManager;
 
 class CBinds : public CComponent
 {
+protected:
 	static void ConBind(IConsole::IResult *pResult, void *pUserData);
 	static void ConBinds(IConsole::IResult *pResult, void *pUserData);
 	static void ConUnbind(IConsole::IResult *pResult, void *pUserData);
@@ -81,7 +82,7 @@ public:
 
 	void SetDDRaceBinds(bool FreeOnly);
 
-private:
+protected:
 	char *m_aapKeyBindings[MODIFIER_COMBINATION_COUNT][KEY_LAST];
 	std::vector<CBindSlot> m_vActiveBinds;
 };
