@@ -100,6 +100,7 @@ public:
 
 	bool m_Race;
 	bool m_Pvp;
+	bool m_InfClass;
 
 	bool m_DontMaskEntities;
 	bool m_AllowXSkins;
