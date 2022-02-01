@@ -314,8 +314,11 @@ public:
 	};
 	int m_ServerMode;
 	CGameInfo m_GameInfo;
-
-	char m_aSavedLocalRconPassword[sizeof(g_Config.m_SvRconPassword)] = "";
+	
+	char m_aSavedLocalRconPassword[sizeof(g_Config.m_SvRconPassword)]{};
+	int m_TimeLimitInSeconds;
+	int m_InfClassHeroGiftTick;
+	int m_InfclassGameInfoVersion;
 
 	int m_DemoSpecId;
 
@@ -437,6 +440,8 @@ public:
 		int m_InfClassPlayerFlags;
 		int m_InfClassPlayerClass;
 		bool m_InfClassCustomSkin;
+
+		int m_InfClassClassData1;
 
 		char m_aName[MAX_NAME_LENGTH];
 		char m_aClan[MAX_CLAN_LENGTH];
@@ -930,6 +935,8 @@ private:
 
 	vec2 GetSmoothPos(int ClientId);
 	void ProcessInfClassPlayerInfo(int ClientId, const CNetObj_InfClassPlayer *pPlayerData);
+	void ProcessInfClassClassInfo(int ClientId, const CNetObj_InfClassClassInfo *pClassInfo);
+	void ProcessInfClassGameInfo(const CNetObj_InfClassGameInfo *pGameInfo);
 
 	int m_PredictedDummyId;
 	int m_IsDummySwapping;
