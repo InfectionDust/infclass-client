@@ -5,6 +5,7 @@
 #include <engine/shared/config.h>
 #include <engine/textrender.h>
 
+#include <game/classes.h>
 #include <game/client/animstate.h>
 #include <game/client/components/scoreboard.h>
 #include <game/client/gameclient.h>
@@ -511,6 +512,34 @@ void CHud::RenderWarmupTimer()
 		w = TextRender()->TextWidth(FontSize, aBuf, -1, -1.0f);
 		TextRender()->Text(150 * Graphics()->ScreenAspect() + -w / 2, 75, FontSize, aBuf, -1.0f);
 	}
+}
+
+void CHud::FormatTimerText(char *pDest, int DestSize, int Ticks)
+{
+	if(Ticks < 0)
+	{
+		str_copy(pDest, "N/A", DestSize);
+		return;
+	}
+
+	int RemainingTicks = Ticks - Client()->GameTick(g_Config.m_ClDummy);
+	if(RemainingTicks < 0)
+		RemainingTicks = 0;
+
+	int CentiSeconds = RemainingTicks * 10 / Client()->GameTickSpeed();
+
+	const float ResultTime = CentiSeconds / 10.0f;
+	int Seconds = ResultTime;
+
+	if(CentiSeconds % 10)
+	{
+		Seconds += 1;
+	}
+
+	const int Minutes = Seconds / 60;
+	Seconds = Seconds % 60;
+
+	str_format(pDest, DestSize, "%02d:%02d", Minutes, Seconds);
 }
 
 void CHud::RenderTextInfo()
@@ -1595,6 +1624,134 @@ void CHud::RenderObjectOwnerIcons(int ClientId)
 	Graphics()->MapScreen(ScreenX0, ScreenY0, ScreenX1, ScreenY1);
 }
 
+void CHud::RenderClassExtraHud(int ClientId)
+{
+	const CGameClient::CClientData *pClientData = &m_pClient->m_aClients[ClientId];
+	if(!pClientData || !m_pClient->m_GameInfo.m_InfClass)
+		return;
+
+	const int PlayerClass = pClientData->m_InfClassPlayerClass;
+	if(PlayerClass != PLAYERCLASS_HERO)
+	{
+		if(m_pClient->m_InfclassGameInfoVersion < 2)
+		{
+			// Old server
+			return;
+		}
+	}
+
+	int Lines = 0;
+	switch(PlayerClass)
+	{
+	case PLAYERCLASS_HERO:
+		Lines = 2;
+		break;
+	default:
+		return;
+	}
+
+	bool DrawBox = false;
+	float HudW = 48;
+	float HudH = 40;
+	int X = 0;
+	int Y = 0;
+
+	if(Config()->m_ClShowhudScore)
+	{
+		// Next to HP
+		X = 5 + 10 * 12;
+		Y = 2;
+	}
+	else
+	{
+		// Bottom right
+		Y = 300 - HudH;
+		X = m_Width - HudW;
+		DrawBox = true;
+	}
+
+	if(DrawBox)
+	{
+		int Corners = IGraphics::CORNER_ALL;
+		if(X + HudW + 1 >= m_Width)
+			Corners &= IGraphics::CORNER_L;
+		if(Y == 0)
+			Corners &= IGraphics::CORNER_B;
+		if(Y + HudH >= m_Height)
+			Corners &= IGraphics::CORNER_T;
+
+		Graphics()->DrawRect(X, Y, HudW + 1, HudH, ColorRGBA(0.0f, 0.0f, 0.0f, 0.4f), Corners, 3.75f);
+	}
+
+	float FontSize = 9.0f;
+	X += 2;
+
+	int TextXOffset = 6;
+	const int TextYOffset = Lines == 1 ? 10 : 5;
+
+	if(PlayerClass == PLAYERCLASS_HERO)
+	{
+		TextXOffset += 12;
+	}
+
+	{
+		char aBuffer[32];
+		const int PlayerTimerEndTick = pClientData->m_InfClassClassData1;
+		FormatTimerText(aBuffer, sizeof(aBuffer), PlayerTimerEndTick);
+
+		// Draw the text
+		switch(PlayerClass)
+		{
+		case PLAYERCLASS_HERO:
+			break;
+		default:
+			break;
+		}
+
+		TextRender()->Text(X + TextXOffset, Y + TextYOffset, FontSize, aBuffer, -1.0f);
+	}
+
+	if(PlayerClass == PLAYERCLASS_HERO)
+	{
+		// Draw the flag
+		constexpr int FlagQuadOffset = NUM_WEAPONS * 10 * 2 + 40 * 2 + NUM_WEAPONS + 0;
+		constexpr int FlagXOffset = 5;
+		constexpr int FlagYOffset = 2;
+
+		Graphics()->TextureSet(GameClient()->m_GameSkin.m_SpriteFlagBlue);
+		Graphics()->SetColor(1.f, 1.f, 1.f, 1.f);
+		Graphics()->RenderQuadContainerAsSprite(m_HudQuadContainerIndex, FlagQuadOffset, X + FlagXOffset, Y + FlagYOffset);
+
+		Y += 20;
+
+		// Second line, hero gift cooldown
+		int FlagTick = m_pClient->m_InfClassHeroGiftTick;
+		char aBuffer[32];
+		FormatTimerText(aBuffer, sizeof(aBuffer), FlagTick);
+		TextRender()->Text(X + TextXOffset, Y + TextYOffset, FontSize, aBuffer, -1.0f);
+
+		// Health and armor icons
+		float PickupsScale = 0.6;
+		float Diff = 4.5;
+		float BaseX = X + 2.1;
+		float BaseY = Y + 3;
+
+		Graphics()->TextureSet(GameClient()->m_GameSkin.m_SpritePickupHealth);
+		Graphics()->QuadsSetRotation(0);
+		Graphics()->SetColor(1.f, 1.f, 1.f, 1.f);
+		Graphics()->RenderQuadContainerAsSprite(m_HudQuadContainerIndex, 0, BaseX - Diff, BaseY + Diff, PickupsScale, PickupsScale);
+		Graphics()->RenderQuadContainerAsSprite(m_HudQuadContainerIndex, 0, BaseX + Diff, BaseY - Diff, PickupsScale, PickupsScale);
+
+		Graphics()->TextureSet(GameClient()->m_GameSkin.m_SpritePickupArmor);
+		Graphics()->RenderQuadContainerAsSprite(m_HudQuadContainerIndex, 0, BaseX - Diff, BaseY - Diff, PickupsScale, PickupsScale);
+		Graphics()->RenderQuadContainerAsSprite(m_HudQuadContainerIndex, 0, BaseX + Diff, BaseY + Diff, PickupsScale, PickupsScale);
+
+		Graphics()->TextureSet(GameClient()->m_GameSkin.m_SpriteFlagBlue);
+		Graphics()->SetColor(1.f, 1.f, 1.f, 1.f);
+		Graphics()->RenderQuadContainerAsSprite(m_HudQuadContainerIndex, FlagQuadOffset, X + FlagXOffset, Y + FlagYOffset);
+	}
+}
+
 void CHud::RenderSpectatorHud()
 {
 	// draw the box
@@ -1731,6 +1888,10 @@ void CHud::OnRender()
 			RenderSpectatorCount();
 			RenderMovementInformation();
 			RenderDDRaceEffects();
+			if(GameClient()->m_GameInfo.m_InfClass)
+			{
+				RenderClassExtraHud(m_pClient->m_aLocalIds[g_Config.m_ClDummy]);
+			}
 		}
 		else if(m_pClient->m_Snap.m_SpecInfo.m_Active)
 		{
