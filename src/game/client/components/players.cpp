@@ -22,6 +22,8 @@
 #include <game/client/components/skins.h>
 #include <game/client/components/sounds.h>
 
+#include <game/classes.h>
+
 #include "players.h"
 
 #include <base/color.h>
@@ -464,11 +466,15 @@ void CPlayers::RenderPlayer(
 
 	CTeeRenderInfo RenderInfo = *pRenderInfo;
 
+	int PlayerClass = (m_pClient->m_GameInfo.m_InfClass && (ClientId >= 0)) ? GameClient()->m_aClients[ClientId].m_InfClassPlayerClass : -1;
+
 	bool Local = m_pClient->m_Snap.m_LocalClientId == ClientId;
 	bool OtherTeam = m_pClient->IsOtherTeam(ClientId);
 	float Alpha = (OtherTeam || ClientId < 0) ? g_Config.m_ClShowOthersAlpha / 100.0f : 1.0f;
 	if(ClientId == -2) // ghost
 		Alpha = g_Config.m_ClRaceGhostAlpha / 100.0f;
+	if((PlayerClass == PLAYERCLASS_GHOST) && (Player.m_Emote == EMOTE_BLINK))
+		Alpha = 0.6;
 
 	// set size
 	RenderInfo.m_Size = 64.0f;
