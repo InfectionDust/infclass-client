@@ -896,6 +896,13 @@ void CPlayers::OnRender()
 			aRenderInfo[i].m_TeeRenderFlags |= TEE_EFFECT_SPARKLE;
 
 		const CGameClient::CClientData *pClientData = &m_pClient->m_aClients[i];
+		const int PlayerClass = pClientData ? pClientData->m_InfClassPlayerClass : -1;
+		if(PlayerClass == PLAYERCLASS_BOOMER)
+		{
+			if(!Config()->m_InfcShowBoomerWeapon)
+				aRenderInfo[i].m_TeeRenderFlags |= TEE_NO_WEAPON;
+		}
+
 		aRenderInfo[i].m_InfectedHook = pClientData->m_InfClassPlayerFlags & INFCLASS_PLAYER_FLAG_INFECTED;
 
 		const CGameClient::CSnapState::CCharacterInfo &CharacterInfo = m_pClient->m_Snap.m_aCharacters[i];
