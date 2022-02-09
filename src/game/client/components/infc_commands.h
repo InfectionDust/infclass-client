@@ -30,8 +30,30 @@ public:
 		Invalid = Count,
 	};
 
+	enum class EInfoMessage
+	{
+		Run,
+		Ghost,
+		Help,
+		BoomFlyHammerFly,
+		Where,
+		Clear,
+		AdvertiseWitch,
+		Taxi,
+		AskTaxi,
+		SuggestTaxi,
+		AskFlag,
+		SuggestFlag,
+		AskHealing,
+		SuggestHealing,
+		Count,
+		Invalid = Count,
+	};
+
 	static void ConSayTeamLocation(IConsole::IResult *pResult, void *pUserData);
 	void ConSayTeamLocation(ELocation Location, const char *pExtraArg);
+	static void ConSayInfoMessage(IConsole::IResult *pResult, void *pUserData);
+	void ConSayInfoMessage(EInfoMessage Message);
 
 	static void ConCallWitch(IConsole::IResult *pResult, void *pUserData);
 	void ConCallWitch();
