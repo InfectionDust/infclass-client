@@ -478,6 +478,10 @@ void CPlayers::RenderPlayer(
 
 	// set size
 	RenderInfo.m_Size = 64.0f;
+	if(PlayerClass == PLAYERCLASS_BOOMER)
+	{
+		RenderInfo.m_Size = 68.0f;
+	}
 
 	float IntraTick = Intra;
 	if(ClientId >= 0)
