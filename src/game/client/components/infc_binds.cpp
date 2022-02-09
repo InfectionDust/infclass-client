@@ -61,4 +61,42 @@ void CInfCBinds::ConfigSaveCallback(IConfigManager *pConfigManager, void *pUserD
 void CInfCBinds::SetDefaults()
 {
 	UnbindAll();
+
+	bool FreeOnly = false;
+	int MOD_SHIFT_COMBINATION = 1 << MODIFIER_SHIFT;
+
+	Bind(KEY_KP_1, "say_team_location bottomleft", FreeOnly);
+	Bind(KEY_KP_2, "say_team_location bottom", FreeOnly);
+	Bind(KEY_KP_3, "say_team_location bottomright", FreeOnly);
+	Bind(KEY_KP_4, "say_team_location left", FreeOnly);
+	Bind(KEY_KP_5, "say_team_location middle", FreeOnly);
+	Bind(KEY_KP_6, "say_team_location right", FreeOnly);
+	Bind(KEY_KP_7, "say_team_location topleft", FreeOnly);
+	Bind(KEY_KP_8, "say_team_location top", FreeOnly);
+	Bind(KEY_KP_9, "say_team_location topright", FreeOnly);
+
+	Bind(KEY_KP_1, "say_team_location bottomleft clear", FreeOnly, MOD_SHIFT_COMBINATION);
+	Bind(KEY_KP_2, "say_team_location bottom clear", FreeOnly, MOD_SHIFT_COMBINATION);
+	Bind(KEY_KP_3, "say_team_location bottomright clear", FreeOnly, MOD_SHIFT_COMBINATION);
+	Bind(KEY_KP_4, "say_team_location left clear", FreeOnly, MOD_SHIFT_COMBINATION);
+	Bind(KEY_KP_5, "say_team_location middle clear", FreeOnly, MOD_SHIFT_COMBINATION);
+	Bind(KEY_KP_6, "say_team_location right clear", FreeOnly, MOD_SHIFT_COMBINATION);
+	Bind(KEY_KP_7, "say_team_location topleft clear", FreeOnly, MOD_SHIFT_COMBINATION);
+	Bind(KEY_KP_8, "say_team_location top clear", FreeOnly, MOD_SHIFT_COMBINATION);
+	Bind(KEY_KP_9, "say_team_location topright clear", FreeOnly, MOD_SHIFT_COMBINATION);
+
+	Bind(KEY_B, "say_team_location bunker", FreeOnly);
+	Bind(KEY_Z, "say_team_location bonuszone", FreeOnly);
+
+	Bind(KEY_B, "say_team_location bunker clear", FreeOnly, MOD_SHIFT_COMBINATION);
+	Bind(KEY_Z, "say_team_location bonuszone clear", FreeOnly, MOD_SHIFT_COMBINATION);
+
+	Bind(KEY_R, "say_message run", FreeOnly);
+	Bind(KEY_G, "say_message ghost", FreeOnly);
+	Bind(KEY_H, "say_message help", FreeOnly);
+	Bind(KEY_W, "say_message where", FreeOnly, MOD_SHIFT_COMBINATION);
+	Bind(KEY_F, "say_message bfhf", FreeOnly);
+	Bind(KEY_C, "say_message clear", FreeOnly);
+
+	Bind(KEY_W, "witch", FreeOnly);
 }
