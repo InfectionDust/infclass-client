@@ -29,6 +29,30 @@ const char *GetEnumValueName(CInfCCommands::ELocation Location)
 	return gs_pLocationNames[Index];
 }
 
+static const int InfoMessagesCount = static_cast<int>(CInfCCommands::EInfoMessage::Count);
+static const char *gs_pInfoMessageNames[InfoMessagesCount] = {
+	"run",
+	"ghost",
+	"help",
+	"bfhf",
+	"where",
+	"clear",
+	"witch",
+	"taxi",
+	"asktaxi",
+	"suggesttaxi",
+	"askflag",
+	"suggestflag",
+	"askhealing",
+	"suggesthealing",
+};
+
+const char *GetEnumValueName(CInfCCommands::EInfoMessage Location)
+{
+	int Index = static_cast<int>(Location);
+	return gs_pInfoMessageNames[Index];
+}
+
 static const char *gs_apLocationTextStyle1[LocationsCount] = {
 	"↔ Middle",
 	"↑ Top",
@@ -42,6 +66,23 @@ static const char *gs_apLocationTextStyle1[LocationsCount] = {
 	"Bunker",
 	"Bonus zone",
 	"Spawn",
+};
+
+static const char *gs_apInfoMessageTextStyle1[InfoMessagesCount] = {
+	"Run! Run! Run!",
+	"Ghost!",
+	"Help!",
+	"Boom fly / Hammer fly!",
+	"Where?",
+	"Clear!",
+	"Call witch!",
+	"F3!",
+	"Taxi is needed!",
+	"Anyone needs a Taxi?",
+	"Please find a flag!",
+	"Anyone needs a flag?",
+	"Heal!",
+	"Who needs healing?",
 };
 
 template <typename TEnum>
@@ -67,6 +108,7 @@ void CInfCCommands::OnConsoleInit()
 {
 	Console()->Register("witch", "", CFGFLAG_CLIENT, ConCallWitch, this, "Echo the text in chat window");
 	Console()->Register("say_team_location", "s[location] ?s[clear]", CFGFLAG_CLIENT, ConSayTeamLocation, this, "Echo the text in chat window");
+	Console()->Register("say_message", "s[message_type]", CFGFLAG_CLIENT, ConSayInfoMessage, this, "Say a specific message in the chat or team chat");
 }
 
 void CInfCCommands::ConSayTeamLocation(IConsole::IResult *pResult, void *pUserData)
@@ -107,6 +149,42 @@ void CInfCCommands::ConSayTeamLocation(ELocation Location, const char *pExtraArg
 		return;
 	}
 	m_pClient->m_Chat.SendChat(1, pText);
+}
+
+void CInfCCommands::ConSayInfoMessage(IConsole::IResult *pResult, void *pUserData)
+{
+	CInfCCommands *pThis = static_cast<CInfCCommands*>(pUserData);
+	if(pResult->NumArguments() < 1)
+	{
+		dbg_msg("infc/commands", "ConSayTeamInfoMessage: No args given");
+		return;
+	}
+	const char *pMessageType = pResult->GetString(0);
+	EInfoMessage InfoMessage = GetKeyByName<EInfoMessage>(pMessageType);
+	if(InfoMessage == EInfoMessage::Invalid)
+	{
+		dbg_msg("infc/commands", "ConSayTeamInfoMessage: Invalid message type %s", pMessageType);
+		return;
+	}
+
+	pThis->ConSayInfoMessage(InfoMessage);
+}
+
+void CInfCCommands::ConSayInfoMessage(EInfoMessage Message)
+{
+	const char *pText = gs_apInfoMessageTextStyle1[static_cast<int>(Message)];
+
+	bool TeamChat = true;
+	switch(Message)
+	{
+	case EInfoMessage::AdvertiseWitch:
+		TeamChat = false;
+		break;
+	default:
+		break;
+	}
+
+	m_pClient->m_Chat.SendChat(TeamChat ? 1 : 0, pText);
 }
 
 void CInfCCommands::ConCallWitch(IConsole::IResult *pResult, void *pUserData)
