@@ -935,7 +935,35 @@ static CKeyInfo gs_aKeys[] =
 static const int GenericKeysNumber = std::size(gs_aKeys);
 
 static CKeyInfo gs_aInfCKeys[] =
-{
+	{
+		// Localize - these strings are localized within CLocConstString
+		{Localizable("Bottom/left"), "say_team_location bottomleft", 0, 0},
+		{Localizable("Bottom"), "say_team_location bottom", 0, 0},
+		{Localizable("Bottom/right"), "say_team_location bottomright", 0, 0},
+		{Localizable("Left"), "say_team_location left", 0, 0},
+		{Localizable("Middle"), "say_team_location middle", 0, 0},
+		{Localizable("Right"), "say_team_location right", 0, 0},
+		{Localizable("Top/Left"), "say_team_location topleft", 0, 0},
+		{Localizable("Top"), "say_team_location top", 0, 0},
+		{Localizable("Top/Right"), "say_team_location topright", 0, 0},
+
+		{Localizable("Bunker"), "say_team_location bunker", 0, 0},
+		{Localizable("Bonus zone"), "say_team_location bonuszone", 0, 0},
+		{Localizable("Spawn"), "say_team_location infspawn", 0, 0},
+
+		{Localizable("Bottom/left is clear"), "say_team_location bottomleft clear", 0, 0},
+		{Localizable("Bottom is clear"), "say_team_location bottom clear", 0, 0},
+		{Localizable("Bottom/right is clear"), "say_team_location bottomright clear", 0, 0},
+		{Localizable("Left is clear"), "say_team_location left clear", 0, 0},
+		{Localizable("Middle is clear"), "say_team_location middle clear", 0, 0},
+		{Localizable("Right is clear"), "say_team_location right clear", 0, 0},
+		{Localizable("Top/Left is clear"), "say_team_location topleft clear", 0, 0},
+		{Localizable("Top is clear"), "say_team_location top clear", 0, 0},
+		{Localizable("Top/Right is clear"), "say_team_location topright clear", 0, 0},
+
+		{Localizable("Bunker is clear"), "say_team_location bunker clear", 0, 0},
+		{Localizable("Bonus zone is clear"), "say_team_location bonuszone clear", 0, 0},
+		{Localizable("Spawn is clear"), "say_team_location infspawn clear", 0, 0},
 };
 
 void CMenus::DoSettingsControlsButtons(int Start, int Stop, CUIRect View)
@@ -1422,13 +1450,54 @@ void CMenus::RenderSettingsInfClassControls(CUIRect MainView)
 	const float HeaderHeight = FontSize + 5.0f + Margin;
 
 	CUIRect LeftRect, RightRect;
+	CUIRect ReportLocationSettings, ReportLocationClearSettings;
 
 	MainView.VSplitMid(&LeftRect, &RightRect);
+
+	constexpr int LocationKeys = static_cast<int>(CInfCCommands::ELocation::Count);
 
 	int LastButton = GenericKeysNumber;
 
 	const float ButtonHeight = 20.0f;
 	const float Spacing = 2.0f;
+
+	// Report location settings
+	{
+		LeftRect.VMargin(5.0f, &LeftRect);
+		LeftRect.HSplitTop(LocationKeys * (ButtonHeight + Spacing) + HeaderHeight + Margin, &ReportLocationSettings, &LeftRect);
+
+		if(s_ScrollRegion.AddRect(ReportLocationSettings))
+		{
+			ReportLocationSettings.Draw(ColorRGBA(1, 1, 1, 0.25f), IGraphics::CORNER_ALL, 10.0f);
+			ReportLocationSettings.VMargin(Margin, &ReportLocationSettings);
+
+			TextRender()->Text(ReportLocationSettings.x, ReportLocationSettings.y + (HeaderHeight - FontSize) / 2.f, FontSize, Localize("Report location"), -1.0f);
+
+			ReportLocationSettings.HSplitTop(HeaderHeight, 0, &ReportLocationSettings);
+
+			DoSettingsControlsButtons(LastButton, LastButton + LocationKeys, ReportLocationSettings);
+			LastButton += LocationKeys;
+		}
+	}
+
+	// Report location clearsettings
+	{
+		RightRect.VMargin(5.0f, &RightRect);
+		RightRect.HSplitTop(LocationKeys * (ButtonHeight + Spacing) + HeaderHeight + Margin, &ReportLocationClearSettings, &RightRect);
+
+		if(s_ScrollRegion.AddRect(ReportLocationClearSettings))
+		{
+			ReportLocationClearSettings.Draw(ColorRGBA(1, 1, 1, 0.25f), IGraphics::CORNER_ALL, 10.0f);
+			ReportLocationClearSettings.VMargin(Margin, &ReportLocationClearSettings);
+
+			TextRender()->Text(ReportLocationClearSettings.x, ReportLocationClearSettings.y + (HeaderHeight - FontSize) / 2.f, FontSize, Localize("Report location is clear"), -1.0f);
+
+			ReportLocationClearSettings.HSplitTop(HeaderHeight, 0, &ReportLocationClearSettings);
+
+			DoSettingsControlsButtons(LastButton, LastButton + LocationKeys, ReportLocationClearSettings);
+			LastButton += LocationKeys;
+		}
+	}
 
 	s_ScrollRegion.End();
 }
