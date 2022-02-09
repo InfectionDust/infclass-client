@@ -940,7 +940,7 @@ void CMenus::DoSettingsControlsButtons(int Start, int Stop, CUIRect View)
 
 		CUIRect Button, Label;
 		View.HSplitTop(20.0f, &Button, &View);
-		Button.VSplitLeft(135.0f, &Label, &Button);
+		Button.VSplitLeft(160.0f, &Label, &Button);
 
 		char aBuf[64];
 		str_format(aBuf, sizeof(aBuf), "%s:", Localize(Key.m_pName));
