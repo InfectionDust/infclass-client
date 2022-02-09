@@ -964,6 +964,23 @@ static CKeyInfo gs_aInfCKeys[] =
 		{Localizable("Bunker is clear"), "say_team_location bunker clear", 0, 0},
 		{Localizable("Bonus zone is clear"), "say_team_location bonuszone clear", 0, 0},
 		{Localizable("Spawn is clear"), "say_team_location infspawn clear", 0, 0},
+
+		{Localizable("\"RUN!\""), "say_message run", 0, 0},
+		{Localizable("\"Ghost!\""), "say_message ghost", 0, 0},
+		{Localizable("\"Help!\""), "say_message help", 0, 0},
+		{Localizable("\"Boom (hammer) fly\""), "say_message bfhf", 0, 0},
+		{Localizable("\"Where?\""), "say_message where", 0, 0},
+		{Localizable("\"Clear!\""), "say_message clear", 0, 0},
+		{Localizable("\"Call witch!\""), "say_message witch", 0, 0},
+		{Localizable("\"Taxi!\""), "say_message taxi", 0, 0},
+		{Localizable("\"Need a Taxi!\""), "say_message asktaxi", 0, 0},
+		{Localizable("\"Anyone needs a Taxi?\""), "say_message suggesttaxi", 0, 0},
+		{Localizable("\"Please find a flag!\""), "say_message askflag", 0, 0},
+		{Localizable("\"Anyone needs a flag?\""), "say_message suggestflag", 0, 0},
+		{Localizable("\"Medic!\""), "say_message askhealing", 0, 0},
+		{Localizable("\"Who needs a healing?\""), "say_message suggesthealing", 0, 0},
+
+		{Localizable("Call witch"), "witch", 0, 0},
 };
 
 void CMenus::DoSettingsControlsButtons(int Start, int Stop, CUIRect View)
@@ -1451,10 +1468,13 @@ void CMenus::RenderSettingsInfClassControls(CUIRect MainView)
 
 	CUIRect LeftRect, RightRect;
 	CUIRect ReportLocationSettings, ReportLocationClearSettings;
+	CUIRect TeamChatSettings, ExtraCommandsSettings;
 
 	MainView.VSplitMid(&LeftRect, &RightRect);
 
 	constexpr int LocationKeys = static_cast<int>(CInfCCommands::ELocation::Count);
+	constexpr int TeamChatKeys = static_cast<int>(CInfCCommands::EInfoMessage::Count);
+	constexpr int ExtraCommandKeys = 1;
 
 	int LastButton = GenericKeysNumber;
 
@@ -1496,6 +1516,42 @@ void CMenus::RenderSettingsInfClassControls(CUIRect MainView)
 
 			DoSettingsControlsButtons(LastButton, LastButton + LocationKeys, ReportLocationClearSettings);
 			LastButton += LocationKeys;
+		}
+	}
+
+	{
+		LeftRect.HSplitTop(Margin, nullptr, &LeftRect);
+		LeftRect.HSplitTop(TeamChatKeys * (ButtonHeight + Spacing) + HeaderHeight + Margin, &TeamChatSettings, &LeftRect);
+
+		if(s_ScrollRegion.AddRect(TeamChatSettings))
+		{
+			TeamChatSettings.Draw(ColorRGBA(1, 1, 1, 0.25f), IGraphics::CORNER_ALL, 10.0f);
+			TeamChatSettings.VMargin(Margin, &TeamChatSettings);
+
+			TextRender()->Text(TeamChatSettings.x, TeamChatSettings.y + (HeaderHeight - FontSize) / 2.f, FontSize, Localize("Team chat"), -1.0f);
+
+			TeamChatSettings.HSplitTop(HeaderHeight, 0, &TeamChatSettings);
+
+			DoSettingsControlsButtons(LastButton, LastButton + TeamChatKeys, TeamChatSettings);
+			LastButton += TeamChatKeys;
+		}
+	}
+
+	{
+		RightRect.HSplitTop(Margin, nullptr, &RightRect);
+		RightRect.HSplitTop(ExtraCommandKeys * (ButtonHeight + Spacing) + HeaderHeight + Margin, &ExtraCommandsSettings, &RightRect);
+
+		if(s_ScrollRegion.AddRect(ExtraCommandsSettings))
+		{
+			ExtraCommandsSettings.Draw(ColorRGBA(1, 1, 1, 0.25f), IGraphics::CORNER_ALL, 10.0f);
+			ExtraCommandsSettings.VMargin(Margin, &ExtraCommandsSettings);
+
+			TextRender()->Text(ExtraCommandsSettings.x, ExtraCommandsSettings.y + (HeaderHeight - FontSize) / 2.f, FontSize, Localize("Extra commands"), -1.0f);
+
+			ExtraCommandsSettings.HSplitTop(HeaderHeight, 0, &ExtraCommandsSettings);
+
+			DoSettingsControlsButtons(LastButton, LastButton + ExtraCommandKeys, ExtraCommandsSettings);
+			LastButton += ExtraCommandKeys;
 		}
 	}
 
