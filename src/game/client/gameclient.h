@@ -41,6 +41,7 @@
 #include "components/ghost.h"
 #include "components/hud.h"
 #include "components/infc_binds.h"
+#include "components/infc_commands.h"
 #include "components/infomessages.h"
 #include "components/items.h"
 #include "components/mapimages.h"
@@ -138,6 +139,7 @@ public:
 	CInfoMessages m_InfoMessages;
 	CCamera m_Camera;
 	CChat m_Chat;
+	CInfCCommands m_InfCCommands;
 	CMotd m_Motd;
 	CBroadcast m_Broadcast;
 	CGameConsole m_GameConsole;
