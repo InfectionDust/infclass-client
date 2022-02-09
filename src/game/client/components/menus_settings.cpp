@@ -932,12 +932,18 @@ static CKeyInfo gs_aKeys[] =
 		{Localizable("Show HUD"), "toggle cl_showhud 0 1", 0, 0},
 };
 
+static const int GenericKeysNumber = std::size(gs_aKeys);
+
+static CKeyInfo gs_aInfCKeys[] =
+{
+};
+
 void CMenus::DoSettingsControlsButtons(int Start, int Stop, CUIRect View)
 {
 	for(int i = Start; i < Stop; i++)
 	{
-		const CKeyInfo &Key = gs_aKeys[i];
-
+		const CKeyInfo &Key = i < GenericKeysNumber ? gs_aKeys[i] : gs_aInfCKeys[i - GenericKeysNumber];
+		CBinds &Binds = i < GenericKeysNumber ? m_pClient->m_Binds : m_pClient->m_InfCBinds;
 		CUIRect Button, Label;
 		View.HSplitTop(20.0f, &Button, &View);
 		Button.VSplitLeft(160.0f, &Label, &Button);
@@ -951,9 +957,9 @@ void CMenus::DoSettingsControlsButtons(int Start, int Stop, CUIRect View)
 		if(NewId != OldId || NewModifierCombination != OldModifierCombination)
 		{
 			if(OldId != 0 || NewId == 0)
-				m_pClient->m_Binds.Bind(OldId, "", false, OldModifierCombination);
+				Binds.Bind(OldId, "", false, OldModifierCombination);
 			if(NewId != 0)
-				m_pClient->m_Binds.Bind(NewId, Key.m_pCommand, false, NewModifierCombination);
+				Binds.Bind(NewId, Key.m_pCommand, false, NewModifierCombination);
 		}
 
 		View.HSplitTop(2.0f, nullptr, &View);
@@ -1157,8 +1163,36 @@ void CMenus::DoJoystickBar(const CUIRect *pRect, float Current, float Tolerance,
 	Handle.Draw(SliderColor, IGraphics::CORNER_ALL, Handle.h / 2.0f);
 }
 
+enum
+{
+	CONTROLS_TAB_GENERAL,
+	CONTROLS_TAB_INFCLASS,
+	NUMBER_OF_CONTROLS_TABS
+};
+
 void CMenus::RenderSettingsControls(CUIRect MainView)
 {
+	static int s_CurControlsTab = 0;
+
+	CUIRect TabLabel1, TabLabel2;
+
+	MainView.HSplitTop(20, &TabLabel1, &MainView);
+	TabLabel1.VSplitMid(&TabLabel1, &TabLabel2);
+
+	static CButtonContainer s_PageTabs[NUMBER_OF_CONTROLS_TABS];
+	if(DoButton_MenuTab(&s_PageTabs[CONTROLS_TAB_GENERAL], Localize("General"), s_CurControlsTab == 0, &TabLabel1, IGraphics::CORNER_L, NULL, NULL, NULL, NULL, 4))
+		s_CurControlsTab = 0;
+	if(DoButton_MenuTab(&s_PageTabs[CONTROLS_TAB_INFCLASS], Localize("InfClass"), s_CurControlsTab == 1, &TabLabel2, IGraphics::CORNER_R, NULL, NULL, NULL, NULL, 4))
+		s_CurControlsTab = 1;
+
+	MainView.HSplitTop(10.0f, 0x0, &MainView);
+
+	if(s_CurControlsTab == 1)
+	{
+		RenderSettingsInfClassControls(MainView);
+		return;
+	}
+
 	// this is kinda slow, but whatever
 	for(auto &Key : gs_aKeys)
 		Key.m_KeyId = Key.m_ModifierCombination = 0;
@@ -1347,6 +1381,54 @@ void CMenus::RenderSettingsControls(CUIRect MainView)
 			DoSettingsControlsButtons(32, 44, MiscSettings);
 		}
 	}
+
+	s_ScrollRegion.End();
+}
+
+void CMenus::RenderSettingsInfClassControls(CUIRect MainView)
+{
+	// Bake infclass buttons
+	for(auto &Key : gs_aInfCKeys)
+		Key.m_KeyId = Key.m_ModifierCombination = 0;
+
+	for(int Mod = 0; Mod < CBinds::MODIFIER_COMBINATION_COUNT; Mod++)
+	{
+		for(int KeyId = 0; KeyId < KEY_LAST; KeyId++)
+		{
+			const char *pBind = m_pClient->m_InfCBinds.Get(KeyId, Mod);
+			if(!pBind[0])
+				continue;
+
+			for(auto &Key : gs_aInfCKeys)
+				if(str_comp(pBind, Key.m_pCommand) == 0)
+				{
+					Key.m_KeyId = KeyId;
+					Key.m_ModifierCombination = Mod;
+					break;
+				}
+		}
+	}
+
+	// scrollable controls
+	static CScrollRegion s_ScrollRegion;
+	vec2 ScrollOffset(0.0f, 0.0f);
+	CScrollRegionParams ScrollParams;
+	ScrollParams.m_ScrollUnit = 120.0f;
+	s_ScrollRegion.Begin(&MainView, &ScrollOffset, &ScrollParams);
+	MainView.y += ScrollOffset.y;
+
+	const float FontSize = 14.0f;
+	const float Margin = 10.0f;
+	const float HeaderHeight = FontSize + 5.0f + Margin;
+
+	CUIRect LeftRect, RightRect;
+
+	MainView.VSplitMid(&LeftRect, &RightRect);
+
+	int LastButton = GenericKeysNumber;
+
+	const float ButtonHeight = 20.0f;
+	const float Spacing = 2.0f;
 
 	s_ScrollRegion.End();
 }
