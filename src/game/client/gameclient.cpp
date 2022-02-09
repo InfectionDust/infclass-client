@@ -152,6 +152,7 @@ void CGameClient::OnConsoleInit()
 					      &m_Emoticon,
 					      &m_InfoMessages,
 					      &m_Chat,
+					      &m_InfCCommands,
 					      &m_Broadcast,
 					      &m_DebugHud,
 					      &m_TouchControls,
