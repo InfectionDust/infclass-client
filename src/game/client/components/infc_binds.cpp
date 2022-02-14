@@ -15,8 +15,7 @@ void CInfCBinds::OnConsoleInit()
 	Console()->Register("infc_unbind", "s[key]", CFGFLAG_CLIENT, ConUnbind, this, "Unbind key");
 	Console()->Register("infc_unbindall", "", CFGFLAG_CLIENT, ConUnbindAll, this, "Unbind all keys");
 
-	// default bindings
-	LoadPreset();
+	UnbindAll();
 }
 
 bool CInfCBinds::OnInput(const IInput::CEvent &Event)
