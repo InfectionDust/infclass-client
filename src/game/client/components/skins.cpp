@@ -357,7 +357,10 @@ const CSkin *CSkins::Find(const char *pName)
 
 const CSkin *CSkins::FindOrNullptr(const char *pName, bool IgnorePrefix)
 {
-	if(g_Config.m_ClVanillaSkinsOnly && !IsVanillaSkin(pName))
+	if(GameClient()->m_GameInfo.m_InfClass)
+	{
+	}
+	else if(g_Config.m_ClVanillaSkinsOnly && !IsVanillaSkin(pName))
 	{
 		return nullptr;
 	}
