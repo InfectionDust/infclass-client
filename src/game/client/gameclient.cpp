@@ -3490,8 +3490,20 @@ void CGameClient::ProcessInfClassPlayerInfo(int ClientId, const CNetObj_InfClass
 		pClient->m_InfClassSkinInfo.m_ColorableRenderSkin = pSkin->m_ColorableSkin;
 		pClient->m_InfClassSkinInfo.m_BloodColor = pSkin->m_BloodColor;
 		pClient->m_InfClassSkinInfo.m_SkinMetrics = pSkin->m_Metrics;
-		pClient->m_InfClassSkinInfo.m_CustomColoredSkin = false;
 		pClient->m_InfClassSkinInfo.m_Size = 64;
+
+		if(pClient->m_InfClassPlayerFlags & INFCLASS_PLAYER_FLAG_INFECTED)
+		{
+			pClient->m_InfClassSkinInfo.m_CustomColoredSkin = true;
+			pClient->m_InfClassSkinInfo.m_ColorBody = pClient->m_SkinInfo.m_ColorBody;
+			pClient->m_InfClassSkinInfo.m_ColorFeet = pClient->m_SkinInfo.m_ColorFeet;
+		}
+		else
+		{
+			pClient->m_InfClassSkinInfo.m_CustomColoredSkin = false;
+			pClient->m_InfClassSkinInfo.m_ColorBody = ColorRGBA(1, 1, 1);
+			pClient->m_InfClassSkinInfo.m_ColorFeet = ColorRGBA(1, 1, 1);
+		}
 	}
 
 	pClient->UpdateRenderInfo(IsTeamPlay());
