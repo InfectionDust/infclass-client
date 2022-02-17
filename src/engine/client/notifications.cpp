@@ -1,6 +1,7 @@
 #include "notifications.h"
 
 #include <base/detect.h>
+#include <game/version.h>
 
 #if defined(CONF_PLATFORM_MACOS)
 // Code is in src/macos/notification.mm.

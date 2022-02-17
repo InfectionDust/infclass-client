@@ -23,6 +23,7 @@
 #include <game/generated/client_data.h>
 #include <game/generated/client_data7.h>
 #include <game/localization.h>
+#include <game/version.h>
 
 #if defined(CONF_VIDEORECORDER)
 #include <engine/shared/video.h>
@@ -2173,7 +2174,7 @@ int CGraphics_Threaded::IssueInit()
 	if(g_Config.m_GfxVsync)
 		Flags |= IGraphicsBackend::INITFLAG_VSYNC;
 
-	int r = m_pBackend->Init("DDNet Client", &g_Config.m_GfxScreen, &g_Config.m_GfxScreenWidth, &g_Config.m_GfxScreenHeight, &g_Config.m_GfxScreenRefreshRate, &g_Config.m_GfxFsaaSamples, Flags, &g_Config.m_GfxDesktopWidth, &g_Config.m_GfxDesktopHeight, &m_ScreenWidth, &m_ScreenHeight, m_pStorage);
+	int r = m_pBackend->Init(GAME_NAME " Client", &g_Config.m_GfxScreen, &g_Config.m_GfxScreenWidth, &g_Config.m_GfxScreenHeight, &g_Config.m_GfxScreenRefreshRate, &g_Config.m_GfxFsaaSamples, Flags, &g_Config.m_GfxDesktopWidth, &g_Config.m_GfxDesktopHeight, &m_ScreenWidth, &m_ScreenHeight, m_pStorage);
 	AddBackEndWarningIfExists();
 	if(r == 0)
 	{
