@@ -13,6 +13,7 @@
 #include <game/client/render.h>
 #include <game/generated/protocol.h>
 #include <game/localization.h>
+#include <game/version.h>
 
 void CVoting::ConCallvote(IConsole::IResult *pResult, void *pUserData)
 {
@@ -268,7 +269,7 @@ void CVoting::OnMessage(int MsgType, void *pRawMsg)
 			{
 				char aBuf[512];
 				str_format(aBuf, sizeof(aBuf), "%s (%s)", m_aDescription, m_aReason);
-				Client()->Notify("DDNet Vote", aBuf);
+				Client()->Notify(GAME_NAME " Vote", aBuf);
 				m_pClient->m_Sounds.Play(CSounds::CHN_GUI, SOUND_CHAT_HIGHLIGHT, 1.0f);
 			}
 		}
