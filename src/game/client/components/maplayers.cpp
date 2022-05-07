@@ -1402,6 +1402,17 @@ void CMapLayers::OnRender()
 			bool IsTuneLayer = false;
 			bool IsEntityLayer = false;
 
+			bool InfclassMenu = false;
+
+			{
+				char aGroupName[12];
+				IntsToStr(pGroup->m_aName, std::size(pGroup->m_aName), aGroupName, std::size(aGroupName));
+				if(str_comp(aGroupName, "#Generated") == 0)
+				{
+					InfclassMenu = true;
+				}
+			}
+
 			if(pLayer == (CMapItemLayer *)m_pLayers->GameLayer())
 			{
 				IsEntityLayer = IsGameLayer = true;
@@ -1531,7 +1542,7 @@ void CMapLayers::OnRender()
 			if(m_Type == TYPE_FULL_DESIGN)
 				EntityOverlayVal = 0;
 
-			if((Render && EntityOverlayVal < 100 && !IsEntityLayer) || (EntityOverlayVal && IsGameLayer) || (m_Type == TYPE_BACKGROUND_FORCE))
+			if((Render && ((EntityOverlayVal < 100) || InfclassMenu) && !IsEntityLayer) || (EntityOverlayVal && IsGameLayer) || (m_Type == TYPE_BACKGROUND_FORCE))
 			{
 				if(pLayer->m_Type == LAYERTYPE_TILES)
 				{
@@ -1614,9 +1625,9 @@ void CMapLayers::OnRender()
 					}
 
 					CQuad *pQuads = (CQuad *)m_pLayers->Map()->GetDataSwapped(pQLayer->m_Data);
-					if(m_Type == TYPE_BACKGROUND_FORCE || m_Type == TYPE_FULL_DESIGN)
+					if(m_Type == TYPE_BACKGROUND_FORCE || m_Type == TYPE_FULL_DESIGN || InfclassMenu)
 					{
-						if(g_Config.m_ClShowQuads || m_Type == TYPE_FULL_DESIGN)
+						if(g_Config.m_ClShowQuads || m_Type == TYPE_FULL_DESIGN || InfclassMenu)
 						{
 							if(!Graphics()->IsQuadBufferingEnabled())
 							{
