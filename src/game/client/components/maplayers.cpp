@@ -1171,8 +1171,13 @@ void CMapLayers::OnRender()
 			if(m_Type == TYPE_FULL_DESIGN && IsEntityLayer)
 				continue;
 
+			const auto IsGeneratedLayer = [pGroup]() {
+				char aGroupName[12];
+				IntsToStr(pGroup->m_aName, std::size(pGroup->m_aName), aGroupName, std::size(aGroupName));
+				return str_comp(aGroupName, "#Generated") == 0;
+			};
 			// skip rendering anything but entities if we only want to render entities
-			if(!IsEntityLayer && OnlyShowEntities && m_Type != TYPE_BACKGROUND_FORCE)
+			if(!IsEntityLayer && OnlyShowEntities && m_Type != TYPE_BACKGROUND_FORCE && !IsGeneratedLayer())
 				continue;
 
 			// skip rendering of entities if don't want them
@@ -1246,11 +1251,11 @@ void CMapLayers::OnRender()
 					if(!Graphics()->IsQuadBufferingEnabled())
 					{
 						Graphics()->BlendNormal();
-						RenderTools()->RenderQuads(pQuads, pLayerQuads->m_NumQuads, LAYERRENDERFLAG_TRANSPARENT, EnvelopeEval, this);
+						RenderTools()->RenderQuads(pQuads, pLayerQuads->m_NumQuads, LAYERRENDERFLAG_TRANSPARENT, EnvelopeEval, this, IsGeneratedLayer());
 					}
 					else
 					{
-						RenderQuadLayer(m_vvLayerCount[g][l] - 1, pLayerQuads, false);
+						RenderQuadLayer(m_vvLayerCount[g][l] - 1, pLayerQuads, IsGeneratedLayer());
 					}
 				}
 			}
