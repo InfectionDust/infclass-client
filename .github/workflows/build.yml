@@ -18,13 +18,13 @@ jobs:
         os: [ubuntu-latest, macOS-latest, windows-latest, ubuntu-22.04]
         include:
         - os: ubuntu-latest
-          cmake-args: -G Ninja
+          cmake-args: -G Ninja -DVIDEORECORDER=OFF
           cmake-init-env: CXXFLAGS=-Werror
           package-file: "*-linux_x86_64.tar.xz"
           fancy: true
         - os: ubuntu-22.04
           cmake-path: /usr/bin/
-          cmake-args: -G Ninja -DTEST_MYSQL=ON
+          cmake-args: -G Ninja -DVIDEORECORDER=OFF -DTEST_MYSQL=ON
           cmake-init-env: CXXFLAGS=-Werror
           gtest-env: GTEST_FILTER=-*SQLite*
           package-file: "*-linux_x86_64.tar.xz"
