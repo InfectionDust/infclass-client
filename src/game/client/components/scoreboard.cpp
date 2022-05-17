@@ -143,7 +143,28 @@ void CScoreboard::RenderGoals(CUIRect Goals)
 		Ui()->DoLabel(&Goals, aBuf, FontSize, TEXTALIGN_ML);
 	}
 
-	if(pGameInfoObj->m_TimeLimit)
+	if(m_pClient->m_TimeLimitInSeconds)
+	{
+		int Min = m_pClient->m_TimeLimitInSeconds / 60;
+		int Sec = m_pClient->m_TimeLimitInSeconds % 60;
+		if(Sec)
+		{
+			if(Min)
+			{
+				str_format(aBuf, sizeof(aBuf), Localize("Time limit: %d min %02d sec"), Min, Sec);
+			}
+			else
+			{
+				str_format(aBuf, sizeof(aBuf), Localize("Time limit: %02d sec"), Sec);
+			}
+		}
+		else
+		{
+			str_format(aBuf, sizeof(aBuf), Localize("Time limit: %d min"), Min);
+		}
+		Ui()->DoLabel(&Goals, aBuf, FontSize, TEXTALIGN_MC);
+	}
+	else if(pGameInfoObj->m_TimeLimit)
 	{
 		str_format(aBuf, sizeof(aBuf), Localize("Time limit: %d min"), pGameInfoObj->m_TimeLimit);
 		Ui()->DoLabel(&Goals, aBuf, FontSize, TEXTALIGN_MC);
