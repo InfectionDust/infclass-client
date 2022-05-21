@@ -9,6 +9,8 @@
 #include "laser.h"
 #include "projectile.h"
 
+#include <game/classes.h>
+
 // Character, "physical" player's part
 
 void CCharacter::SetWeapon(int W)
@@ -386,7 +388,37 @@ void CCharacter::FireWeapon()
 
 	case WEAPON_SHOTGUN:
 	{
-		if(GameWorld()->m_WorldConfig.m_IsVanilla)
+		if(GameWorld()->m_WorldConfig.m_IsInfClass)
+		{
+			int ShotSpread = 3;
+			if(GetPlayerClass() == PLAYERCLASS_BIOLOGIST)
+				ShotSpread = 1;
+
+			int AmmoAvailable = m_Core.m_aWeapons[WEAPON_SHOTGUN].m_Ammo;
+			for(int i = -ShotSpread; i <= ShotSpread; ++i)
+			{
+				float Spreading[] = {-0.21f, -0.14f, -0.070f, 0, 0.070f, 0.14f, 0.21f};
+				float a = angle(Direction);
+				a += Spreading[i + 3] * 2.0f * (0.25f + 0.75f * static_cast<float>(10 - AmmoAvailable) / 10.0f);
+				float v = 1 - (absolute(i) / (float)ShotSpread);
+				float Speed = mix((float)Tuning()->m_ShotgunSpeeddiff, 1.0f, v);
+
+				float LifeTime = Tuning()->m_ShotgunLifetime + 0.1f * AmmoAvailable / 10.0f;
+
+				new CProjectile(
+					GameWorld(),
+					WEAPON_SHOTGUN, // Type
+					GetCid(), // Owner
+					ProjStartPos, // Pos
+					direction(a) * Speed, // Dir
+					(int)(GameWorld()->GameTickSpeed() * LifeTime), // Span
+					false, // Freeze
+					false, // Explosive
+					-1 // SoundImpact
+				);
+			}
+		}
+		else if(GameWorld()->m_WorldConfig.m_IsVanilla)
 		{
 			int ShotSpread = 2;
 			for(int i = -ShotSpread; i <= ShotSpread; ++i)
