@@ -9,7 +9,7 @@
 
 #include <engine/shared/config.h>
 
-CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Type) :
+CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Type, EBounce B) :
 	CEntity(pGameWorld, CGameWorld::ENTTYPE_LASER)
 {
 	m_Pos = Pos;
@@ -24,6 +24,10 @@ CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEner
 	m_ZeroEnergyBounceInLastTick = false;
 	m_TuneZone = GameWorld()->m_WorldConfig.m_UseTuneZones ? Collision()->IsTune(Collision()->GetMapIndex(m_Pos)) : 0;
 	GameWorld()->InsertEntity(this);
+
+	if(B == NoBounce)
+		return;
+
 	DoBounce();
 }
 
@@ -145,7 +149,7 @@ void CLaser::DoBounce()
 
 			m_Bounces++;
 
-			int BounceNum = GetTuning(m_TuneZone)->m_LaserBounceNum;
+			int BounceNum = m_Bouncing >= 0 ? m_Bouncing : GetTuning(m_TuneZone)->m_LaserBounceNum;
 
 			if(m_Bounces > BounceNum)
 				m_Energy = -1;
@@ -227,4 +231,9 @@ CLaserData CLaser::GetData() const
 	Result.m_TuneZone = m_TuneZone;
 	Result.m_SwitchNumber = m_Number;
 	return Result;
+}
+
+void CLaser::SetBouncing(int Value)
+{
+	m_Bouncing = Value;
 }

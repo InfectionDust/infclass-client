@@ -472,7 +472,31 @@ void CCharacter::FireWeapon()
 	{
 		float LaserReach = GetTuning(GetOverriddenTuneZone())->m_LaserReach;
 
-		new CLaser(GameWorld(), m_Pos, Direction, LaserReach, GetCid(), WEAPON_LASER);
+		if(GameWorld()->m_WorldConfig.m_IsInfClass)
+		{
+			switch(GetPlayerClass())
+			{
+			case PLAYERCLASS_SCIENTIST:
+				LaserReach = LaserReach * 0.6f;
+				break;
+			case PLAYERCLASS_LOOPER:
+				LaserReach = LaserReach * 0.7f;
+				break;
+			default:
+				break;
+			}
+
+			CLaser *pLaser = new CLaser(GameWorld(), m_Pos, Direction, LaserReach, GetCid(), WEAPON_LASER, CLaser::NoBounce);
+			if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
+			{
+				pLaser->SetBouncing(0);
+			}
+			pLaser->EnableBounce();
+		}
+		else
+		{
+			new CLaser(GameWorld(), m_Pos, Direction, LaserReach, GetCid(), WEAPON_LASER);
+		}
 	}
 	break;
 
