@@ -73,6 +73,7 @@ public:
 		bool m_IsDDRace;
 		bool m_IsVanilla;
 		bool m_IsFNG;
+		bool m_IsInfClass;
 		bool m_InfiniteAmmo;
 		bool m_PredictTiles;
 		int m_PredictFreeze;
