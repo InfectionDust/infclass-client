@@ -490,6 +490,7 @@ void CCharacter::FireWeapon()
 			if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
 			{
 				pLaser->SetBouncing(0);
+				pLaser->SetExplosive(true);
 			}
 			pLaser->EnableBounce();
 		}
