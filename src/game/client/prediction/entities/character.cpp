@@ -63,6 +63,14 @@ void CCharacter::HandleJetpack()
 	if(m_Core.m_Jetpack && m_Core.m_ActiveWeapon == WEAPON_GUN)
 		FullAuto = true;
 
+	if(GameWorld()->m_WorldConfig.m_IsInfClass)
+	{
+		if(m_Core.m_ActiveWeapon == WEAPON_GUN)
+		{
+			FullAuto = true;
+		}
+	}
+
 	// check if we gonna fire
 	bool WillFire = false;
 	if(CountInput(m_LatestPrevInput.m_Fire, m_LatestInput.m_Fire).m_Presses)
@@ -84,6 +92,11 @@ void CCharacter::HandleJetpack()
 	{
 	case WEAPON_GUN:
 	{
+		if(GameWorld()->m_WorldConfig.m_IsInfClass)
+		{
+			return;
+		}
+		
 		if(m_Core.m_Jetpack)
 		{
 			int TuneZone = GetOverriddenTuneZone();
@@ -366,7 +379,7 @@ void CCharacter::FireWeapon()
 
 	case WEAPON_GUN:
 	{
-		if(!m_Core.m_Jetpack)
+		if(!m_Core.m_Jetpack || GameWorld()->m_WorldConfig.m_IsInfClass)
 		{
 			int Lifetime = (int)(GameWorld()->GameTickSpeed() * GetTuning(GetOverriddenTuneZone())->m_GunLifetime);
 
@@ -382,6 +395,15 @@ void CCharacter::FireWeapon()
 				0, //Force
 				-1 //SoundImpact
 			);
+		}
+		if(GameWorld()->m_WorldConfig.m_IsInfClass)
+		{
+			if(m_InfClassClass == PLAYERCLASS_MERCENARY)
+			{
+				float MaxSpeed = GetTuning(m_TuneZone)->m_GroundControlSpeed * 1.7f;
+				vec2 Recoil = Direction * (-MaxSpeed / 5.0f);
+				SaturateVelocity(Recoil, MaxSpeed);
+			}
 		}
 	}
 	break;
@@ -1523,4 +1545,38 @@ CCharacter::~CCharacter()
 {
 	if(GameWorld())
 		GameWorld()->RemoveCharacter(this);
+}
+
+void CCharacter::SaturateVelocity(vec2 Force, float MaxSpeed)
+{
+	if(length(Force) < 0.00001)
+		return;
+
+	float Speed = length(m_Core.m_Vel);
+	vec2 VelDir = normalize(m_Core.m_Vel);
+	if(Speed < 0.00001)
+	{
+		VelDir = normalize(Force);
+	}
+	vec2 OrthoVelDir = vec2(-VelDir.y, VelDir.x);
+	float VelDirFactor = dot(Force, VelDir);
+	float OrthoVelDirFactor = dot(Force, OrthoVelDir);
+
+	vec2 NewVel = m_Core.m_Vel;
+	if(Speed < MaxSpeed || VelDirFactor < 0.0f)
+	{
+		NewVel += VelDir*VelDirFactor;
+		float NewSpeed = length(NewVel);
+		if(NewSpeed > MaxSpeed)
+		{
+			if(VelDirFactor > 0.f)
+				NewVel = VelDir*MaxSpeed;
+			else
+				NewVel = -VelDir*MaxSpeed;
+		}
+	}
+
+	NewVel += OrthoVelDir * OrthoVelDirFactor;
+
+	m_Core.m_Vel = NewVel;
 }
