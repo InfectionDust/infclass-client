@@ -3177,6 +3177,7 @@ void CGameClient::UpdatePrediction()
 	{
 		m_GameWorld.GetTuning(0)->m_PlayerCollision = 1;
 		m_GameWorld.GetTuning(0)->m_PlayerHooking = 1;
+		m_GameWorld.GetTuning(0)->m_JetpackStrength = 400;
 	}
 
 	if(!m_Snap.m_pLocalCharacter)
