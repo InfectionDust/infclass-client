@@ -3160,6 +3160,7 @@ void CGameClient::UpdatePrediction()
 	m_GameWorld.m_WorldConfig.m_IsVanilla = m_GameInfo.m_PredictVanilla;
 	m_GameWorld.m_WorldConfig.m_IsDDRace = m_GameInfo.m_PredictDDRace;
 	m_GameWorld.m_WorldConfig.m_IsFNG = m_GameInfo.m_PredictFNG;
+	m_GameWorld.m_WorldConfig.m_IsInfClass = m_GameInfo.m_InfClass;
 	m_GameWorld.m_WorldConfig.m_PredictDDRace = m_GameInfo.m_PredictDDRace;
 	m_GameWorld.m_WorldConfig.m_PredictTiles = m_GameInfo.m_PredictDDRace && m_GameInfo.m_PredictDDRaceTiles;
 	m_GameWorld.m_WorldConfig.m_UseTuneZones = m_GameInfo.m_PredictDDRaceTiles;
@@ -3257,6 +3258,18 @@ void CGameClient::UpdatePrediction()
 	CCharacter *pDummyChar = nullptr;
 	if(PredictDummy())
 		pDummyChar = m_GameWorld.GetCharacterById(m_PredictedDummyId);
+
+	if(m_GameInfo.m_InfClass)
+	{
+		for(int i = 0; i < MAX_CLIENTS; i++)
+		{
+			CCharacter *pChar = m_GameWorld.GetCharacterById(i);
+			if(!pChar)
+				continue;
+
+			pChar->m_InfClassClass = m_aClients[i].m_InfClassPlayerClass;
+		}
+	}
 
 	// update strong and weak hook
 	if(pLocalChar && !m_Snap.m_SpecInfo.m_Active && Client()->State() != IClient::STATE_DEMOPLAYBACK && (m_aTuning[g_Config.m_ClDummy].m_PlayerCollision || m_aTuning[g_Config.m_ClDummy].m_PlayerHooking))
