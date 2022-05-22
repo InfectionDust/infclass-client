@@ -270,6 +270,9 @@ void CCharacter::FireWeapon()
 	if(!GameWorld()->m_WorldConfig.m_PredictWeapons)
 		return;
 
+	if(GameWorld()->m_WorldConfig.m_IsInfClass && (GetPlayerClass() == PLAYERCLASS_NONE))
+		return;
+
 	if(m_ReloadTimer != 0)
 		return;
 
