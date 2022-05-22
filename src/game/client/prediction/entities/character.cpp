@@ -520,6 +520,9 @@ void CCharacter::FireWeapon()
 			case PLAYERCLASS_SCIENTIST:
 				LaserReach = LaserReach * 0.6f;
 				break;
+			case PLAYERCLASS_BIOLOGIST:
+				LaserReach = 400.0f;
+				break;
 			case PLAYERCLASS_LOOPER:
 				LaserReach = LaserReach * 0.7f;
 				break;
