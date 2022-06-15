@@ -2788,6 +2788,10 @@ CSkinDescriptor CGameClient::CClientData::ToSkinDescriptor() const
 
 		switch(m_InfClassPlayerClass)
 		{
+		case PLAYERCLASS_NINJA:
+			str_copy(SkinDescriptor.m_aSkinName, "inf_ninja");
+			SkinDescriptor.m_Flags |= CSkinDescriptor::FLAG_IC_CUSTOM;
+			break;
 		default:
 			str_copy(SkinDescriptor.m_aSkinName, m_aSkinName);
 			break;
@@ -3602,14 +3606,8 @@ vec2 CGameClient::GetSmoothPos(int ClientId)
 void CGameClient::ProcessInfClassPlayerInfo(int ClientId, const CNetObj_InfClassPlayer *pPlayerData)
 {
 	CClientData *pClient = &m_aClients[ClientId];
-
 	pClient->m_InfClassPlayerFlags = pPlayerData->m_Flags;
-	if(pClient->m_InfClassPlayerClass == pPlayerData->m_Class)
-		return;
-
 	pClient->m_InfClassPlayerClass = pPlayerData->m_Class;
-
-	pClient->UpdateRenderInfo();
 }
 
 void CGameClient::Echo(const char *pString)

@@ -45,7 +45,7 @@ CSkins::CSkins() :
 bool IsInfclassSkin(const char *pName)
 {
 	constexpr static const char *INFCLASS_SKINS[] = {
-		"",
+		"inf_ninja",
 	};
 
 	auto SkinComparator = [pName](const char *pInfclassSkin) { return str_comp(pName, pInfclassSkin) == 0; };
