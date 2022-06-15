@@ -209,7 +209,7 @@ bool CSkins::IsVanillaSkin(const char *pName)
 bool CSkins::IsInfclassSkin(const char *pName)
 {
 	constexpr static const char *INFCLASS_SKINS[] = {
-		"",
+		"inf_ninja",
 	};
 
 	return std::any_of(std::begin(INFCLASS_SKINS), std::end(INFCLASS_SKINS), [pName](const char *pVanillaSkin) {
