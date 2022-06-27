@@ -809,6 +809,11 @@ void CPlayers::RenderPlayer(
 		GameClient()->m_Effects.SparkleTrail(BodyPos, Alpha);
 	}
 
+	if(m_pClient->m_GameInfo.m_InfClass)
+	{
+		RenderInfCPlayer(Position, ClientId);
+	}
+
 	if(ClientId < 0)
 		return;
 
@@ -869,6 +874,32 @@ void CPlayers::RenderPlayer(
 
 			Graphics()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 			Graphics()->QuadsSetRotation(0);
+		}
+	}
+}
+
+void CPlayers::RenderInfCPlayer(const vec2 &Position, int ClientId)
+{
+	const CGameClient::CClientData *pClientData = &m_pClient->m_aClients[ClientId];
+	int InfclassPlayerFlags = pClientData->m_InfClassPlayerFlags;
+
+	int LocalID = m_pClient->m_aLocalIds[g_Config.m_ClDummy];
+	const CGameClient::CClientData *pLocalClientData = &m_pClient->m_aClients[LocalID];
+	int LocalInfclassPlayerFlags = pLocalClientData->m_InfClassPlayerFlags;
+	bool LocalSpec = pLocalClientData->m_Team == TEAM_SPECTATORS;
+	const bool LocalInfected = LocalInfclassPlayerFlags & INFCLASS_PLAYER_FLAG_INFECTED;
+	const bool Infected = InfclassPlayerFlags & INFCLASS_PLAYER_FLAG_INFECTED;
+
+	if(LocalSpec || (LocalInfected == Infected))
+	{
+		// Render same-team hints
+		if(g_Config.m_InfcShowHookProtection && (InfclassPlayerFlags & INFCLASS_PLAYER_FLAG_HOOK_PROTECTION_OFF))
+		{
+			Graphics()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+			Graphics()->QuadsSetRotation(pi / 4);
+
+			Graphics()->TextureSet(Infected ? GameClient()->m_InfclassSkin.m_SpriteHookHead : GameClient()->m_GameSkin.m_SpriteHookHead);
+			Graphics()->RenderQuadContainerAsSprite(m_IcContainerIndex, m_IcStatusIconOffset, Position.x - 22.0f, Position.y - 36.f);
 		}
 	}
 }
@@ -1080,4 +1111,10 @@ void CPlayers::OnInit()
 
 	Graphics()->QuadsSetSubset(0.f, 0.f, 1.f, 1.f);
 	Graphics()->QuadsSetRotation(0.f);
+
+	{
+		m_IcContainerIndex = Graphics()->CreateQuadContainer(false);
+		m_IcStatusIconOffset = RenderTools()->QuadContainerAddSprite(m_IcContainerIndex, 22.f);
+		Graphics()->QuadContainerUpload(m_IcContainerIndex);
+	}
 }
