@@ -521,7 +521,17 @@ void CCharacter::FireWeapon()
 				LaserReach = LaserReach * 0.6f;
 				break;
 			case PLAYERCLASS_BIOLOGIST:
+			{
+				if(m_Core.m_aWeapons[WEAPON_LASER].m_Ammo < 10)
+					return;
+
 				LaserReach = 400.0f;
+				vec2 To = m_Pos + Direction * LaserReach;
+				if(!Collision()->IntersectLine(m_Pos, To, 0x0, &To))
+				{
+					return;
+				}
+			}
 				break;
 			case PLAYERCLASS_LOOPER:
 				LaserReach = LaserReach * 0.7f;
