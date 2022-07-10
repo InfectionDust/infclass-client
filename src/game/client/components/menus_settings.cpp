@@ -2680,6 +2680,15 @@ void CMenus::RenderSettingsAppearance(CUIRect MainView)
 		{
 			Ui()->DoScrollbarOption(&g_Config.m_ClFreezeBarsAlphaInsideFreeze, &g_Config.m_ClFreezeBarsAlphaInsideFreeze, &Button, Localize("Opacity of freeze bars inside freeze"), 0, 100, &CUi::ms_LinearScrollbarScale, CUi::SCROLLBAR_OPTION_MULTILINE, "%");
 		}
+
+		// ***** Infclass HUD ***** //
+		RightView.HSplitTop(MarginBetweenViews, nullptr, &RightView);
+		Ui()->DoLabel_AutoLineSize(Localize("Infclass HUD"), HeadlineFontSize,
+			TEXTALIGN_LEFT, &RightView, HeadlineHeight);
+		RightView.HSplitTop(MarginSmall, nullptr, &LeftView);
+
+		// Switches of various DDRace HUD elements
+		DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_InfcShowHookProtection, Localize("Show player hook protection"), &g_Config.m_InfcShowHookProtection, &RightView, LineSize);
 	}
 	else if(s_CurTab == APPEARANCE_TAB_CHAT)
 	{
