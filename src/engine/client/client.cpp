@@ -3981,6 +3981,8 @@ const char *CClient::DemoPlayer_Play(const char *pFilename, int StorageType)
 	str_copy(m_CurrentServerInfo.m_aMap, pMapInfo->m_aName);
 	m_CurrentServerInfo.m_MapCrc = pMapInfo->m_Crc;
 	m_CurrentServerInfo.m_MapSize = pMapInfo->m_Size;
+	if(str_startswith(m_CurrentServerInfo.m_aMap, "infc_"))
+		str_copy(m_CurrentServerInfo.m_aGameType, "InfclassR");
 
 	// enter demo playback state
 	SetState(IClient::STATE_DEMOPLAYBACK);
