@@ -689,5 +689,44 @@ const char *CEditor::Explain(EExplanation Explanation, int Tile, int Layer)
 
 const char *CEditor::Explain(const char *pZoneType, int Tile)
 {
+	if(str_comp(pZoneType, "icBonus") == 0)
+	{
+		switch(Tile)
+		{
+		default:
+			return "";
+		case 1:
+			return "5/min: Humans get +5 points each time they accumulated 60 seconds by staying inside this zone";
+		}
+	}
+	else if(str_comp(pZoneType, "icDamage") == 0)
+	{
+		switch(Tile)
+		{
+		default:
+			return "";
+		case 1:
+			return "Death zone: Any player touching this zone dies instantly";
+		case 2:
+			return "Death zone (non-undead only): Any player touching this zone, that is not an undead, dies instantly";
+		case 3:
+			return "Death zone (infected only): Any infected touching this zone dies instantly";
+		case 4:
+			return "Infected area: Any human touching this zone is immediately infected";
+		}
+	}
+	else if(str_comp(pZoneType, "icTele") == 0)
+	{
+		switch(Tile)
+		{
+		default:
+			return "";
+		case 1:
+			return "No witch spawn: Witches can't spawn infected in this zone. This zone is nice to place over spikes and other dangerous parts of the map";
+		case 2:
+			return "No scientist teleport: Scientists can't be teleported in this zone";
+		}
+	}
+
 	return nullptr;
 }
