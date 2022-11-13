@@ -37,6 +37,7 @@
 #include "race.h"
 #include "render.h"
 
+#include <game/classes.h>
 #include <game/damage_type.h>
 #include <game/localization.h>
 #include <game/mapitems.h>
