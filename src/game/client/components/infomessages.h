@@ -42,6 +42,13 @@ class CInfoMessages : public CComponent
 		// kill msg
 		int m_InfDamageType = -1;
 		int m_Weapon;
+
+		int m_AssistantId = -1;
+		char m_aAssistantName[64];
+		STextContainerIndex m_AssistantPlusContainerIndex;
+		STextContainerIndex m_AssistantTextContainerIndex;
+		std::shared_ptr<CManagedTeeRenderInfo> m_pAssistantManagedTeeRenderInfo;
+
 		int m_ModeSpecial; // for CTF, if the guy is carrying a flag for example
 		int m_FlagCarrierBlue;
 		int m_TeamSize;
