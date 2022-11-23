@@ -41,6 +41,8 @@ void CInfoMessages::DeleteTextContainers(CInfoMsg &InfoMsg)
 {
 	TextRender()->DeleteTextContainer(InfoMsg.m_VictimTextContainerIndex);
 	TextRender()->DeleteTextContainer(InfoMsg.m_KillerTextContainerIndex);
+	TextRender()->DeleteTextContainer(InfoMsg.m_AssistantTextContainerIndex);
+	TextRender()->DeleteTextContainer(InfoMsg.m_AssistantPlusContainerIndex);
 	TextRender()->DeleteTextContainer(InfoMsg.m_DiffTextContainerIndex);
 	TextRender()->DeleteTextContainer(InfoMsg.m_TimeTextContainerIndex);
 }
@@ -180,6 +182,26 @@ void CInfoMessages::CreateTextContainersIfNotCreated(CInfoMsg &InfoMsg)
 		TextRender()->TextColor(NameColor(InfoMsg.m_KillerId));
 		TextRender()->CreateTextContainer(InfoMsg.m_KillerTextContainerIndex, &Cursor, InfoMsg.m_aKillerName);
 	}
+	if(!InfoMsg.m_AssistantTextContainerIndex.Valid() && InfoMsg.m_aAssistantName[0] != 0)
+	{
+		{
+			CTextCursor Cursor;
+			TextRender()->SetCursor(&Cursor, 0, 0, FONT_SIZE, TEXTFLAG_RENDER);
+			TextRender()->TextColor(NameColor(InfoMsg.m_AssistantID));
+			TextRender()->CreateTextContainer(InfoMsg.m_AssistantTextContainerIndex, &Cursor, InfoMsg.m_aAssistantName);
+		}
+
+		{
+			// plus
+			const char aPlus[] = "+";
+			const ColorRGBA PlusColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClKillMessageHighlightColor));
+
+			CTextCursor Cursor;
+			TextRender()->SetCursor(&Cursor, 0, 0, FONT_SIZE, TEXTFLAG_RENDER);
+			TextRender()->TextColor(PlusColor);
+			TextRender()->CreateTextContainer(InfoMsg.m_AssistantPlusContainerIndex, &Cursor, aPlus);
+		}
+	}
 
 	if(!InfoMsg.m_DiffTextContainerIndex.Valid() && InfoMsg.m_aDiffText[0] != '\0')
 	{
@@ -298,6 +320,17 @@ void CInfoMessages::OnInfcKillMessage(const CNetMsg_Inf_KillMsg *pMsg)
 	Kill.m_KillerId = pMsg->m_Killer;
 	str_copy(Kill.m_aKillerName, m_pClient->m_aClients[Kill.m_KillerId].m_aName);
 	Kill.m_KillerRenderInfo = m_pClient->m_aClients[Kill.m_KillerId].m_RenderInfo;
+	Kill.m_AssistantID = pMsg->m_Assistant;
+	if(Kill.m_AssistantID >= 0 && Kill.m_AssistantID < MAX_CLIENTS && m_pClient->m_aClients[Kill.m_AssistantID].m_Active)
+	{
+		str_copy(Kill.m_aAssistantName, m_pClient->m_aClients[Kill.m_AssistantID].m_aName);
+		Kill.m_AssistantRenderInfo = m_pClient->m_aClients[Kill.m_AssistantID].m_RenderInfo;
+	}
+	else
+	{
+		Kill.m_aAssistantName[0] = '\0';
+		Kill.m_AssistantRenderInfo.Reset();
+	}
 
 	Kill.m_InfDamageType = pMsg->m_InfDamageType;
 	Kill.m_Weapon = pMsg->m_Weapon;
@@ -418,6 +451,17 @@ void CInfoMessages::RenderKillMsg(const CInfoMsg &InfoMsg, float x, float y)
 			Graphics()->RenderQuadContainerAsSprite(m_SpriteQuadContainerIndex, QuadOffset, x - 56, y - 16);
 		}
 
+		if(InfoMsg.m_AssistantID >= 0)
+		{
+			// render assistant tee
+			x -= 24.0f;
+
+			vec2 OffsetToMid;
+			RenderTools()->GetRenderTeeOffsetToRenderedTee(CAnimState::GetIdle(), &InfoMsg.m_AssistantRenderInfo, OffsetToMid);
+			const vec2 TeeRenderPos = vec2(x, y + ROW_HEIGHT / 2.0f + OffsetToMid.y);
+			RenderTools()->RenderTee(CAnimState::GetIdle(), &InfoMsg.m_AssistantRenderInfo, EMOTE_ANGRY, vec2(1, 0), TeeRenderPos);
+		}
+
 		// render killer tee
 		x -= 24.0f;
 		if(InfoMsg.m_KillerId >= 0)
@@ -428,6 +472,21 @@ void CInfoMessages::RenderKillMsg(const CInfoMsg &InfoMsg, float x, float y)
 			RenderTools()->RenderTee(CAnimState::GetIdle(), &InfoMsg.m_KillerRenderInfo, EMOTE_ANGRY, vec2(1, 0), TeeRenderPos);
 		}
 		x -= 32.0f;
+		if(InfoMsg.m_AssistantID >= 0)
+		{
+			// render assistant name
+			x -= TextRender()->GetBoundingBoxTextContainer(InfoMsg.m_AssistantTextContainerIndex).m_W;
+
+			if(InfoMsg.m_AssistantTextContainerIndex.Valid())
+			{
+				TextRender()->RenderTextContainer(InfoMsg.m_AssistantTextContainerIndex, TextColor, TextRender()->DefaultTextOutlineColor(), x, y + (46.f - 36.f) / 2.f);
+
+				ColorRGBA Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClKillMessageHighlightColor));
+				
+				x -= TextRender()->GetBoundingBoxTextContainer(InfoMsg.m_AssistantPlusContainerIndex).m_W;
+				TextRender()->RenderTextContainer(InfoMsg.m_AssistantPlusContainerIndex, Color, TextRender()->DefaultTextOutlineColor(), x, y + (46.f - 36.f) / 2.f);
+			}
+		}
 
 		// render killer name
 		if(InfoMsg.m_KillerTextContainerIndex.Valid())
@@ -533,6 +592,14 @@ void CInfoMessages::OnRefreshSkins()
 				InfoMsg.m_KillerRenderInfo = Client.m_RenderInfo;
 			else
 				InfoMsg.m_KillerId = -1;
+		}
+		if(InfoMsg.m_AssistantID >= 0)
+		{
+			const CGameClient::CClientData &Client = GameClient()->m_aClients[InfoMsg.m_AssistantID];
+			if(Client.m_Active && Client.m_aSkinName[0] != '\0')
+				InfoMsg.m_AssistantRenderInfo = Client.m_RenderInfo;
+			else
+				InfoMsg.m_AssistantID = -1;
 		}
 
 		for(int i = 0; i < MAX_KILLMSG_TEAM_MEMBERS; i++)
