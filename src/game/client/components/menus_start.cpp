@@ -264,7 +264,10 @@ void CMenus::RenderStartMenu(CUIRect MainView)
 	if(str_comp(Client()->LatestVersion(), "0") != 0)
 	{
 		char aBuf[64];
-		str_format(aBuf, sizeof(aBuf), Localize("DDNet %s is out!"), Client()->LatestVersion());
+		const char *pText = Localize("DDNet %s is out!");
+		pText = CUi::ReplaceHardcodedGameName(pText);
+		str_format(aBuf, sizeof(aBuf), pText, Client()->LatestVersion());
+
 		TextRender()->TextColor(TextRender()->DefaultTextColor());
 		Ui()->DoLabel(&VersionUpdate, aBuf, 14.0f, TEXTALIGN_MC);
 	}

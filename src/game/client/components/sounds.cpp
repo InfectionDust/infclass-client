@@ -24,6 +24,8 @@ void CSoundLoading::Run()
 	for(int s = 0; s < g_pData->m_NumSounds; s++)
 	{
 		const char *pLoadingCaption = Localize("Loading DDNet Client");
+		pLoadingCaption = CUi::ReplaceHardcodedGameName(pLoadingCaption);
+
 		const char *pLoadingContent = Localize("Loading sound files");
 
 		for(int i = 0; i < g_pData->m_aSounds[s].m_NumSounds; i++)
