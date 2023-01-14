@@ -344,7 +344,9 @@ void CSkins7::OnInit()
 	InitPlaceholderSkinParts();
 
 	Refresh([this]() {
-		GameClient()->m_Menus.RenderLoading(Localize("Loading DDNet Client"), Localize("Loading skin files"), 0);
+		const char *pCaption = Localize("Loading DDNet Client");
+		pCaption = CUi::ReplaceHardcodedGameName(pCaption);
+		GameClient()->m_Menus.RenderLoading(pCaption, Localize("Loading skin files"), 0);
 	});
 }
 

@@ -355,6 +355,7 @@ void CGameClient::OnInit()
 	Client()->UpdateAndSwap();
 
 	const char *pLoadingDDNetCaption = Localize("Loading DDNet Client");
+	pLoadingDDNetCaption = CUi::ReplaceHardcodedGameName(pLoadingDDNetCaption);
 	const char *pLoadingMessageComponents = Localize("Initializing components");
 	const char *pLoadingMessageComponentsSpecial = Localize("Why are you slowmo replaying to read this?");
 	char aLoadingMessage[256];
