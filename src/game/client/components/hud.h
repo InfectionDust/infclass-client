@@ -97,7 +97,8 @@ class CHud : public CComponent
 	void RenderWarmupTimer();
 	void RenderLocalTime(float x);
 
-	void FormatTimerText(char *pDest, int DestSize, int Ticks);
+	float FormatTimerText(char *pDest, int DestSize, int Ticks, bool ForceLongFormat = true, float ShowFractionIfLessThan = 0);
+	void RenderLaser(vec2 From, vec2 To, const ColorRGBA LaserOutlineColor, const ColorRGBA LaserInnerColor);
 
 	static constexpr float MOVEMENT_INFORMATION_LINE_HEIGHT = 8.0f;
 
@@ -166,6 +167,7 @@ private:
 	int m_LockModeOffset;
 
 	int m_IcStatusIconOffset;
+	int m_IcParticleIconOffset;
 };
 
 #endif
