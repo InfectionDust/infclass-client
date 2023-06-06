@@ -13,6 +13,7 @@
 #include <game/client/gameclient.h>
 #include <game/client/prediction/entities/character.h>
 #include <game/client/prediction/gameworld.h>
+#include <game/damage_type.h>
 
 static constexpr float ROW_HEIGHT = 46.0f;
 static constexpr float FONT_SIZE = 36.0f;
@@ -69,6 +70,23 @@ void CInfoMessages::OnInit()
 
 	Graphics()->QuadsSetSubset(0, 0, 1, 1);
 	m_QuadOffsetRaceFlag = RenderTools()->QuadContainerAddSprite(m_SpriteQuadContainerIndex, 0.0f, 0.0f, RACE_FLAG_SIZE, RACE_FLAG_SIZE);
+
+	m_InfWeaponOffset = m_QuadOffsetRaceFlag + 1;
+	for(int i = 0; i < static_cast<int>(EDamageType::COUNT); ++i)
+	{
+		EDamageType DamageType = static_cast<EDamageType>(i);
+		float ScaleX = 0;
+		float ScaleY = 0;
+		Graphics()->QuadsSetSubset(0, 0, 1, 1);
+
+		int SpriteIndex = GameClient()->GetInfclassSpriteForDamageType(DamageType);
+		if(SpriteIndex >= 0)
+		{
+			RenderTools()->GetSpriteScale(&g_pData->m_aSprites[SpriteIndex], ScaleX, ScaleY);
+		}
+
+		RenderTools()->QuadContainerAddSprite(m_SpriteQuadContainerIndex, 96.f * ScaleX, 96.f * ScaleY);
+	}
 
 	Graphics()->QuadContainerUpload(m_SpriteQuadContainerIndex);
 }
@@ -202,6 +220,9 @@ void CInfoMessages::OnMessage(int MsgType, void *pRawMsg)
 	case NETMSGTYPE_SV_KILLMSG:
 		OnKillMessage(static_cast<CNetMsg_Sv_KillMsg *>(pRawMsg));
 		break;
+	case NETMSGTYPE_INF_KILLMSG:
+		OnInfcKillMessage(static_cast<CNetMsg_Inf_KillMsg *>(pRawMsg));
+		break;
 	case NETMSGTYPE_SV_RACEFINISH:
 		OnRaceFinishMessage(static_cast<CNetMsg_Sv_RaceFinish *>(pRawMsg));
 		break;
@@ -259,6 +280,27 @@ void CInfoMessages::OnKillMessage(const CNetMsg_Sv_KillMsg *pMsg)
 
 	Kill.m_Weapon = pMsg->m_Weapon;
 	Kill.m_ModeSpecial = pMsg->m_ModeSpecial;
+	Kill.m_FlagCarrierBlue = m_pClient->m_Snap.m_pGameDataObj ? m_pClient->m_Snap.m_pGameDataObj->m_FlagCarrierBlue : -1;
+
+	AddInfoMsg(Kill);
+}
+
+void CInfoMessages::OnInfcKillMessage(const CNetMsg_Inf_KillMsg *pMsg)
+{
+	CInfoMsg Kill = CreateInfoMsg(TYPE_KILL);
+
+	Kill.m_TeamSize = 1;
+	Kill.m_aVictimIds[0] = pMsg->m_Victim;
+	Kill.m_VictimDDTeam = m_pClient->m_Teams.Team(Kill.m_aVictimIds[0]);
+	str_copy(Kill.m_aVictimName, m_pClient->m_aClients[Kill.m_aVictimIds[0]].m_aName);
+	Kill.m_aVictimRenderInfo[0] = m_pClient->m_aClients[Kill.m_aVictimIds[0]].m_RenderInfo;
+
+	Kill.m_KillerId = pMsg->m_Killer;
+	str_copy(Kill.m_aKillerName, m_pClient->m_aClients[Kill.m_KillerId].m_aName);
+	Kill.m_KillerRenderInfo = m_pClient->m_aClients[Kill.m_KillerId].m_RenderInfo;
+
+	Kill.m_InfDamageType = pMsg->m_InfDamageType;
+	Kill.m_Weapon = pMsg->m_Weapon;
 	Kill.m_FlagCarrierBlue = m_pClient->m_Snap.m_pGameDataObj ? m_pClient->m_Snap.m_pGameDataObj->m_FlagCarrierBlue : -1;
 
 	AddInfoMsg(Kill);
@@ -335,7 +377,21 @@ void CInfoMessages::RenderKillMsg(const CInfoMsg &InfoMsg, float x, float y)
 
 	// render weapon
 	x -= 32.0f;
-	if(InfoMsg.m_Weapon >= 0)
+	int VanillaWeapon = InfoMsg.m_Weapon;
+	if(InfoMsg.m_InfDamageType >= 0)
+	{
+		int Index = InfoMsg.m_InfDamageType;
+		EDamageType DamageType = static_cast<EDamageType>(InfoMsg.m_InfDamageType);
+		IGraphics::CTextureHandle DamageTypeTexture = GameClient()->GetInfclassTextureForDamageType(DamageType);
+		if(DamageTypeTexture.IsValid())
+		{
+			Graphics()->TextureSet(DamageTypeTexture);
+			Graphics()->RenderQuadContainerAsSprite(m_SpriteQuadContainerIndex, m_InfWeaponOffset + Index, x, y + 20);
+			VanillaWeapon = -1;
+		}
+	}
+
+	if(VanillaWeapon >= 0)
 	{
 		Graphics()->TextureSet(GameClient()->m_GameSkin.m_aSpriteWeapons[InfoMsg.m_Weapon]);
 		Graphics()->RenderQuadContainerAsSprite(m_SpriteQuadContainerIndex, 4 + InfoMsg.m_Weapon, x, y + 28);
