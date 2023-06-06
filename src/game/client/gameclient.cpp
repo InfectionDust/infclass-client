@@ -36,6 +36,7 @@
 #include "race.h"
 #include "render.h"
 
+#include <game/damage_type.h>
 #include <game/localization.h>
 #include <game/mapitems.h>
 #include <game/version.h>
@@ -3875,6 +3876,20 @@ void CGameClient::LoadInfclassSkin(const char *pPath, bool AsDir)
 {
 	if(m_InfclassSkinLoaded)
 	{
+		for(int i = 0; i < static_cast<int>(EDamageType::COUNT); ++i)
+		{
+			EDamageType DamageType = static_cast<EDamageType>(i);
+			int SpriteIndex = GetInfclassSpriteForDamageType(DamageType);
+			if(SpriteIndex < 0)
+				continue;
+
+			IGraphics::CTextureHandle *pHandle = GetInfclassTexturePtrForDamageType(DamageType);
+			if(pHandle)
+			{
+				Graphics()->UnloadTexture(pHandle);
+			}
+		}
+
 		m_InfclassSkinLoaded = false;
 	}
 
@@ -3902,8 +3917,22 @@ void CGameClient::LoadInfclassSkin(const char *pPath, bool AsDir)
 		else
 			LoadGameSkin(pPath, true);
 	}
-	else if(PngLoaded)
+	else if(PngLoaded && Graphics()->CheckImageDivisibility(aPath, ImgInfo, g_pData->m_aSprites[SPRITE_INF_SNIPER_RIFLE].m_pSet->m_Gridx, g_pData->m_aSprites[SPRITE_INF_SNIPER_RIFLE].m_pSet->m_Gridy, true))
 	{
+		for(int i = 0; i < static_cast<int>(EDamageType::COUNT); ++i)
+		{
+			EDamageType DamageType = static_cast<EDamageType>(i);
+			int SpriteIndex = GetInfclassSpriteForDamageType(DamageType);
+			if(SpriteIndex >= 0)
+			{
+				IGraphics::CTextureHandle *pHandle = GetInfclassTexturePtrForDamageType(DamageType);
+				if(pHandle)
+				{
+					*pHandle = Graphics()->LoadSpriteTexture(ImgInfo, &g_pData->m_aSprites[SpriteIndex]);
+				}
+			}
+		}
+
 		m_InfclassSkinLoaded = true;
 
 		ImgInfo.Free();
@@ -4306,6 +4335,97 @@ void CGameClient::ConchainRefreshSkins(IConsole::IResult *pResult, void *pUserDa
 static bool UnknownMapSettingCallback(const char *pCommand, void *pUser)
 {
 	return true;
+}
+
+int CGameClient::GetInfclassSpriteForDamageType(EDamageType DamageType)
+{
+	switch(DamageType)
+	{
+	case EDamageType::SNIPER_RIFLE:
+		return SPRITE_INF_SNIPER_RIFLE;
+	case EDamageType::SCIENTIST_LASER:
+		return SPRITE_INF_SCIENTIST_LASER;
+	case EDamageType::MEDIC_SHOTGUN:
+		return SPRITE_INF_MEDIC_SHOTGUN;
+
+	case EDamageType::LASER_WALL:
+		return SPRITE_INF_LASER_WALL;
+	case EDamageType::SOLDIER_BOMB:
+		return SPRITE_INF_SOLDIER_BOMB;
+	case EDamageType::SCIENTIST_MINE:
+		return SPRITE_INF_SCIENTIST_MINE;
+	case EDamageType::BIOLOGIST_MINE:
+		return SPRITE_INF_BIOLOGIST_MINE;
+	case EDamageType::MERCENARY_BOMB:
+		return SPRITE_INF_MERCENARY_BOMB;
+	case EDamageType::WHITE_HOLE:
+		return SPRITE_INF_WHITE_HOLE;
+	case EDamageType::TURRET_DESTRUCTION:
+		return SPRITE_INF_TURRET_DESTRUCTION;
+	case EDamageType::TURRET_LASER:
+		return SPRITE_INF_TURRET_LASER;
+
+	case EDamageType::BOOMER_EXPLOSION:
+		return SPRITE_INF_BOOMER_EXPLOSION;
+	case EDamageType::SLUG_SLIME:
+		return SPRITE_INF_SLUG_SLIME;
+	case EDamageType::DRYING_HOOK:
+		return SPRITE_INF_DRYING_HOOK;
+
+	default:
+		return -1;
+	}
+}
+
+IGraphics::CTextureHandle *CGameClient::GetInfclassTexturePtrForDamageType(EDamageType DamageType)
+{
+	switch(DamageType)
+	{
+	case EDamageType::SNIPER_RIFLE:
+		return &m_InfclassSkin.m_SpriteSniperRifle;
+	case EDamageType::SCIENTIST_LASER:
+		return &m_InfclassSkin.m_SpriteScientistLaser;
+	case EDamageType::MEDIC_SHOTGUN:
+		return &m_InfclassSkin.m_SpriteMedicShotgun;
+
+	case EDamageType::LASER_WALL:
+		return &m_InfclassSkin.m_SpriteLaserWall;
+	case EDamageType::SOLDIER_BOMB:
+		return &m_InfclassSkin.m_SpriteSoldierBomb;
+	case EDamageType::SCIENTIST_MINE:
+		return &m_InfclassSkin.m_SpriteScientistMine;
+	case EDamageType::BIOLOGIST_MINE:
+		return &m_InfclassSkin.m_SpriteBiologistMine;
+	case EDamageType::MERCENARY_BOMB:
+		return &m_InfclassSkin.m_SpriteMercenaryBomb;
+	case EDamageType::WHITE_HOLE:
+		return &m_InfclassSkin.m_SpriteWhiteHole;
+	case EDamageType::TURRET_DESTRUCTION:
+		return &m_InfclassSkin.m_SpriteTurretDestruction;
+	case EDamageType::TURRET_LASER:
+		return &m_InfclassSkin.m_SpriteTurretLaser;
+
+	case EDamageType::BOOMER_EXPLOSION:
+		return &m_InfclassSkin.m_SpriteBoomerExplosion;
+	case EDamageType::SLUG_SLIME:
+		return &m_InfclassSkin.m_SpriteSlugSlime;
+	case EDamageType::DRYING_HOOK:
+		return &m_InfclassSkin.m_SpriteDryingHook;
+
+	default:
+		return nullptr;
+	}
+}
+
+IGraphics::CTextureHandle CGameClient::GetInfclassTextureForDamageType(EDamageType DamageType)
+{
+	const IGraphics::CTextureHandle *pHandle = GetInfclassTexturePtrForDamageType(DamageType);
+	if(pHandle)
+	{
+		return *pHandle;
+	}
+
+	return IGraphics::CTextureHandle();
 }
 
 void CGameClient::LoadMapSettings()
