@@ -464,6 +464,13 @@ Messages = [
 		NetIntRange("m_Total", 0, 'MAX_CLIENTS'),
 	]),
 
+	NetMessageEx("Inf_KillMsg", "kill-ex1@infclass", [
+		NetIntRange("m_Victim", 0, 'MAX_CLIENTS-1'),
+		NetIntRange("m_Killer", -1, 'MAX_CLIENTS-1'),
+		NetIntAny("m_InfDamageType"),
+		NetIntRange("m_Weapon", -3, 'NUM_WEAPONS-1'),
+	]),
+
 	### Client messages
 	NetMessage("Cl_Say", [
 		NetBool("m_Team"),
