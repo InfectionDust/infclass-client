@@ -64,6 +64,8 @@
 
 #include <vector>
 
+enum class EDamageType;
+
 class CGameInfo
 {
 public:
@@ -770,10 +772,38 @@ public:
 
 	struct SClientInfclassSkin
 	{
+		IGraphics::CTextureHandle m_SpriteSniperRifle;
+		IGraphics::CTextureHandle m_SpriteScientistLaser;
+		IGraphics::CTextureHandle m_SpriteMedicShotgun;
+		IGraphics::CTextureHandle m_SpriteLooperLaser;
+		IGraphics::CTextureHandle m_SpriteMercenaryGun;
+		IGraphics::CTextureHandle m_SpriteMercenaryGrenade;
+
+		IGraphics::CTextureHandle m_SpriteLaserWall;
+		IGraphics::CTextureHandle m_SpriteSoldierBomb;
+		IGraphics::CTextureHandle m_SpriteScientistMine;
+		IGraphics::CTextureHandle m_SpriteBiologistMine;
+		IGraphics::CTextureHandle m_SpriteMercenaryBomb;
+		IGraphics::CTextureHandle m_SpriteWhiteHole;
+		IGraphics::CTextureHandle m_SpriteTurretDestruction;
+		IGraphics::CTextureHandle m_SpriteTurretLaser;
+		IGraphics::CTextureHandle m_SpriteTurretPlasma;
+
+		IGraphics::CTextureHandle m_SpriteInfectionHammer;
+		IGraphics::CTextureHandle m_SpriteBite;
+		IGraphics::CTextureHandle m_SpriteBoomerExplosion;
+		IGraphics::CTextureHandle m_SpriteSlugSlime;
+		IGraphics::CTextureHandle m_SpriteDryingHook;
+		IGraphics::CTextureHandle m_SpriteInfectionTile;
+		IGraphics::CTextureHandle m_SpriteGameInfection;
 	};
 
 	SClientInfclassSkin m_InfclassSkin;
 	bool m_InfclassSkinLoaded;
+
+	IGraphics::CTextureHandle *GetInfclassTexturePtrForDamageType(EDamageType DamageType);
+	IGraphics::CTextureHandle GetInfclassTextureForDamageType(EDamageType DamageType);
+	int GetInfclassSpriteForDamageType(EDamageType DamageType);
 
 	struct SClientParticlesSkin
 	{
