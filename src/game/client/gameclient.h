@@ -804,6 +804,7 @@ public:
 	IGraphics::CTextureHandle *GetInfclassTexturePtrForDamageType(EDamageType DamageType);
 	IGraphics::CTextureHandle GetInfclassTextureForDamageType(EDamageType DamageType);
 	int GetInfclassSpriteForDamageType(EDamageType DamageType);
+	float GetAspectTextureRatio(EDamageType DamageType);
 
 	struct SClientParticlesSkin
 	{
