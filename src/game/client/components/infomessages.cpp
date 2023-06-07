@@ -409,23 +409,35 @@ void CInfoMessages::RenderKillMsg(const CInfoMsg &InfoMsg, float x, float y)
 	}
 
 	// render weapon
-	x -= 32.0f;
 	int VanillaWeapon = InfoMsg.m_Weapon;
 	if(InfoMsg.m_InfDamageType >= 0)
 	{
 		int Index = InfoMsg.m_InfDamageType;
 		EDamageType DamageType = static_cast<EDamageType>(InfoMsg.m_InfDamageType);
+		float AspectRatio = GameClient()->GetAspectTextureRatio(DamageType);
 		IGraphics::CTextureHandle DamageTypeTexture = GameClient()->GetInfclassTextureForDamageType(DamageType);
 		if(DamageTypeTexture.IsValid())
 		{
+			float ExtraOffset = 0;
+			static const float DefaultMetric = 32.0;
+			if(AspectRatio >= 1)
+			{
+				AspectRatio = 1;
+			}
+			else
+			{
+				ExtraOffset = (1 - AspectRatio) / 2;
+			}
 			Graphics()->TextureSet(DamageTypeTexture);
-			Graphics()->RenderQuadContainerAsSprite(m_SpriteQuadContainerIndex, m_InfWeaponOffset + Index, x, y + 20);
+			x -= DefaultMetric * AspectRatio;
+			Graphics()->RenderQuadContainerAsSprite(m_SpriteQuadContainerIndex, m_InfWeaponOffset + Index, x - ExtraOffset * DefaultMetric, y + 20);
 			VanillaWeapon = -1;
 		}
 	}
 
 	if(VanillaWeapon >= 0)
 	{
+		x -= 32.0f;
 		Graphics()->TextureSet(GameClient()->m_GameSkin.m_aSpriteWeapons[InfoMsg.m_Weapon]);
 		Graphics()->RenderQuadContainerAsSprite(m_SpriteQuadContainerIndex, 4 + InfoMsg.m_Weapon, x, y + 28);
 	}
