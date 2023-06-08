@@ -359,7 +359,7 @@ void CScoreboard::RenderScoreboard(CUIRect Scoreboard, int Team, int CountStart,
 	const char *pScore = TimeScore ? Localize("Time") : Localize("Score");
 	TextRender()->Text(ScoreOffset + ScoreLength - TextRender()->TextWidth(HeadlineFontsize, pScore), HeadlineY, HeadlineFontsize, pScore);
 	TextRender()->Text(NameOffset, HeadlineY, HeadlineFontsize, Localize("Name"));
-	const char *pClanLabel = Localize("Clan");
+	const char *pClanLabel = GameClient()->m_GameInfo.m_InfClass ? Localize("Class") : Localize("Clan");
 	TextRender()->Text(ClanOffset + (ClanLength - TextRender()->TextWidth(HeadlineFontsize, pClanLabel)) / 2.0f, HeadlineY, HeadlineFontsize, pClanLabel);
 	const char *pPingLabel = Localize("Ping");
 	TextRender()->Text(PingOffset + PingLength - TextRender()->TextWidth(HeadlineFontsize, pPingLabel), HeadlineY, HeadlineFontsize, pPingLabel);
