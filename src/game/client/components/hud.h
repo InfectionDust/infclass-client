@@ -144,6 +144,7 @@ private:
 	int m_AirjumpOffset;
 	int m_AirjumpEmptyOffset;
 	int m_aWeaponOffset[NUM_WEAPONS];
+	int m_HookProtectionOffset;
 	int m_EndlessJumpOffset;
 	int m_EndlessHookOffset;
 	int m_JetpackOffset;
