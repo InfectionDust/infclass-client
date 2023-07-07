@@ -2688,6 +2688,7 @@ void CMenus::RenderSettingsAppearance(CUIRect MainView)
 		RightView.HSplitTop(MarginSmall, nullptr, &LeftView);
 
 		// Switches of various DDRace HUD elements
+		DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_InfUseDDRaceHUD, Localize("Use DDRace HUD for Infclass"), &g_Config.m_InfUseDDRaceHUD, &RightView, LineSize);
 		DoButton_CheckBoxAutoVMarginAndSet(&g_Config.m_InfcShowHookProtection, Localize("Show player hook protection"), &g_Config.m_InfcShowHookProtection, &RightView, LineSize);
 	}
 	else if(s_CurTab == APPEARANCE_TAB_CHAT)

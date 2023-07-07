@@ -915,6 +915,7 @@ void CHud::PreparePlayerStateQuads()
 	}
 
 	// Quads for displaying capabilities
+	m_HookProtectionOffset = RenderTools()->QuadContainerAddSprite(m_HudQuadContainerIndex, 0.f, 0.f, 12.f, 12.f);
 	m_EndlessJumpOffset = RenderTools()->QuadContainerAddSprite(m_HudQuadContainerIndex, 0.f, 0.f, 12.f, 12.f);
 	m_EndlessHookOffset = RenderTools()->QuadContainerAddSprite(m_HudQuadContainerIndex, 0.f, 0.f, 12.f, 12.f);
 	m_JetpackOffset = RenderTools()->QuadContainerAddSprite(m_HudQuadContainerIndex, 0.f, 0.f, 12.f, 12.f);
@@ -948,6 +949,17 @@ void CHud::PreparePlayerStateQuads()
 
 void CHud::RenderPlayerState(const int ClientId)
 {
+	if(m_pClient->m_GameInfo.m_InfClass)
+	{
+		if(!g_Config.m_InfUseDDRaceHUD)
+			return;
+	}
+	else
+	{
+		if(!g_Config.m_ClShowhudDDRace)
+			return;
+	}
+
 	Graphics()->SetColor(1.f, 1.f, 1.f, 1.f);
 
 	// pCharacter contains the predicted character for local players or the last snap for players who are spectated
@@ -1071,6 +1083,17 @@ void CHud::RenderPlayerState(const int ClientId)
 		y += 12;
 	}
 	bool HasCapabilities = false;
+
+	const CGameClient::CClientData *pClientData = &m_pClient->m_aClients[ClientId];
+	int InfclassPlayerFlags = pClientData->m_InfClassPlayerFlags;
+
+	if(InfclassPlayerFlags & INFCLASS_PLAYER_FLAG_HOOK_PROTECTION_OFF)
+	{
+		HasCapabilities = true;
+		Graphics()->TextureSet(GameClient()->m_InfclassSkin.m_SpriteStatusHookable);
+		Graphics()->RenderQuadContainerAsSprite(m_HudQuadContainerIndex, m_HookProtectionOffset, x, y);
+		x += 12;
+	}
 	if(pCharacter->m_EndlessJump)
 	{
 		HasCapabilities = true;
@@ -1668,6 +1691,12 @@ void CHud::RenderStatusIcons(int ClientId)
 		return;
 	}
 
+	if(g_Config.m_InfUseDDRaceHUD && GameClient()->m_GameInfo.m_HudDDRace)
+	{
+		// We render hook protection icon as a part of RenderPlayerState() if DDRace HUD is active
+		return;
+	}
+
 	const CGameClient::CClientData *pClientData = &m_pClient->m_aClients[ClientId];
 	int InfclassPlayerFlags = pClientData->m_InfClassPlayerFlags;
 
@@ -2092,7 +2121,7 @@ void CHud::OnRender()
 				RenderStatusIcons(m_pClient->m_aLocalIds[g_Config.m_ClDummy]);
 				RenderObjectOwnerIcons(m_pClient->m_aLocalIds[g_Config.m_ClDummy]);
 			}
-			if(m_pClient->m_Snap.m_aCharacters[m_pClient->m_Snap.m_LocalClientId].m_HasExtendedData && g_Config.m_ClShowhudDDRace && GameClient()->m_GameInfo.m_HudDDRace)
+			if(m_pClient->m_Snap.m_aCharacters[m_pClient->m_Snap.m_LocalClientId].m_HasExtendedData && GameClient()->m_GameInfo.m_HudDDRace)
 			{
 				RenderPlayerState(m_pClient->m_Snap.m_LocalClientId);
 			}
@@ -2115,7 +2144,6 @@ void CHud::OnRender()
 			}
 			if(SpectatorId != SPEC_FREEVIEW &&
 				m_pClient->m_Snap.m_aCharacters[SpectatorId].m_HasExtendedData &&
-				g_Config.m_ClShowhudDDRace &&
 				(!GameClient()->m_MultiViewActivated || GameClient()->m_MultiViewShowHud) &&
 				GameClient()->m_GameInfo.m_HudDDRace)
 			{
