@@ -1555,6 +1555,48 @@ void CMenus::RenderSettingsInfClassControls(CUIRect MainView)
 		}
 	}
 
+	{
+		// Put both left and right rects to the same height at the bottom of the scroll area
+		CUIRect &BottomRect = LeftRect.y > RightRect.y ? LeftRect : RightRect;
+		CUIRect &TopRect = &BottomRect == &RightRect ? LeftRect : RightRect;
+
+		TopRect.y = BottomRect.y;
+		TopRect.h = BottomRect.h;
+	}
+
+	{
+		CUIRect UnsetAllButton;
+		LeftRect.HSplitTop(Margin, nullptr, &LeftRect);
+		LeftRect.HSplitTop(40.0f, &UnsetAllButton, &LeftRect);
+		if(s_ScrollRegion.AddRect(UnsetAllButton))
+		{
+			UnsetAllButton.Draw(ColorRGBA(1, 1, 1, 0.25f), IGraphics::CORNER_ALL, 10.0f);
+			UnsetAllButton.HMargin(10.0f, &UnsetAllButton);
+			UnsetAllButton.VMargin(30.0f, &UnsetAllButton);
+			static CButtonContainer s_UnsetAllButton;
+			if(DoButton_Menu(&s_UnsetAllButton, Localize("Unbind all"), 0, &UnsetAllButton))
+			{
+				PopupConfirm(Localize("Unbind controls"), Localize("Are you sure that you want to unbind all infclass controls?"),
+					Localize("Unbind"), Localize("Cancel"), &CMenus::ResetSettingsInfclassControls);
+			}
+		}
+	}
+
+	{
+		CUIRect LoadPresetButton;
+		RightRect.HSplitTop(Margin, nullptr, &RightRect);
+		RightRect.HSplitTop(40.0f, &LoadPresetButton, &RightRect);
+		if(s_ScrollRegion.AddRect(LoadPresetButton))
+		{
+			LoadPresetButton.Draw(ColorRGBA(1, 1, 1, 0.25f), IGraphics::CORNER_ALL, 10.0f);
+			LoadPresetButton.HMargin(10.0f, &LoadPresetButton);
+			LoadPresetButton.VMargin(30.0f, &LoadPresetButton);
+			static CButtonContainer s_LoadPresetButton;
+			if(DoButton_Menu(&s_LoadPresetButton, Localize("Load the preset"), 0, &LoadPresetButton))
+				m_pClient->m_InfCBinds.LoadPreset();
+		}
+	}
+
 	s_ScrollRegion.End();
 }
 
@@ -1573,6 +1615,11 @@ void CMenus::ResetSettingsControls()
 	g_Config.m_InpControllerY = 1;
 	g_Config.m_InpControllerTolerance = 5;
 	g_Config.m_UiControllerSens = 100;
+}
+
+void CMenus::ResetSettingsInfclassControls()
+{
+	m_pClient->m_InfCBinds.LoadPreset();
 }
 
 void CMenus::RenderSettingsGraphics(CUIRect MainView)
