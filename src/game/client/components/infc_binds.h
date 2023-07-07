@@ -18,6 +18,6 @@ public:
 	void OnConsoleInit() override;
 	bool OnInput(const IInput::CEvent &Event) override;
 
-	void SetDefaults();
+	void LoadPreset();
 };
 #endif
