@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
-Name=DDNet
+Name=${PROJECT_NAME}
 GenericName=Platform Game
-Exec=DDNet %u
-Icon=ddnet
+Exec=${CLIENT_EXECUTABLE} %u
+Icon=${CLIENT_ICON_NAME}
 Terminal=false
 Keywords=game;multiplayer;
 Categories=Game;ArcadeGame;
 MimeType=x-scheme-handler/ddnet;
-Comment=Launch DDNet
+Comment=Launch ${PROJECT_NAME}
