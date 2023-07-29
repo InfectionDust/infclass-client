@@ -169,7 +169,7 @@ void CInfCCommands::OnConsoleInit()
 		pConfigManager->RegisterCallback(ConfigSaveCallback, this);
 
 	Console()->Register("witch", "", CFGFLAG_CLIENT, ConCallWitch, this, "Echo the text in chat window");
-	Console()->Register("say_team_location", "s[location] ?s[clear]", CFGFLAG_CLIENT, ConSayTeamLocation, this, "Echo the text in chat window");
+	Console()->Register("say_team_location", "s[location] ?s[clear|help]", CFGFLAG_CLIENT, ConSayTeamLocation, this, "Echo the text in chat window");
 	Console()->Register("say_message", "s[message_type]", CFGFLAG_CLIENT, ConSayInfoMessage, this, "Say a specific message in the chat or team chat");
 	Console()->Register("set_message_text", "s[message_type] ?r[message]", CFGFLAG_CLIENT, ConSetMessageText, this, "Override a special message text (location, etc)");
 }
@@ -204,6 +204,12 @@ void CInfCCommands::ConSayTeamLocation(ELocation Location, const char *pExtraArg
 		{
 			char aBuffer[128];
 			str_format(aBuffer, sizeof(aBuffer), "%s is clear", pText);
+			m_pClient->m_Chat.SendChat(1, aBuffer);
+		}
+		else if(str_comp(pExtraArg, "help") == 0)
+		{
+			char aBuffer[128];
+			str_format(aBuffer, sizeof(aBuffer), "Help %s", pText);
 			m_pClient->m_Chat.SendChat(1, aBuffer);
 		}
 		else
