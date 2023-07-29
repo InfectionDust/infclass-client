@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>infclass.desktop</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>CC-BY-SA-3.0 and Apache-2.0</project_license>
+    <name>Infclass</name>
+    <summary>
+        Infclass client is a DDNet-based teeworlds client with infclass features
+    </summary>
+    <description>
+        <p>
+            Infclass client is a fork of DDNet teeworlds client with mod-specific
+            features, such as enhanced kill messages, various indicators, binds,
+            and custom graphics.
+            The client is intentionally identical to DDNet on non-infclass servers.
+        </p>
+    </description>
+    <screenshots>
+        <screenshot type="default">
+            <image>https://infclass.github.io/screenshots/1.png</image>
+        </screenshot>
+        <screenshot>
+            <image>https://infclass.github.io/screenshots/2.png</image>
+        </screenshot>
+        <screenshot>
+            <image>https://infclass.github.io/screenshots/3.png</image>
+        </screenshot>
+    </screenshots>
+    <keywords>
+        <keyword>multiplayer</keyword>
+        <keyword>teeworlds</keyword>
+        <keyword>game</keyword>
+    </keywords>
+    <content_rating type="oars-1.1">
+        <content_attribute id="violence-cartoon">moderate</content_attribute>
+        <content_attribute id="social-chat">intense</content_attribute>
+    </content_rating>
+    <releases>
+        <release date="2023-11-06" version="0.1.8"/>
+    </releases>
+    <url type="homepage">https://infclass.github.io/</url>
+    <url type="bugtracker">https://github.com/infclass/infclass-client/issues</url>
+    <provides>
+        <binary>Infclass</binary>
+    </provides>
+</component>
