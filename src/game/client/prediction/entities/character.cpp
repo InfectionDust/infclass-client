@@ -308,6 +308,7 @@ void CCharacter::FireWeapon()
 	}
 
 	vec2 ProjStartPos = m_Pos + Direction * m_ProximityRadius * 0.75f;
+	float FireDelay = 0;
 
 	switch(m_Core.m_ActiveWeapon)
 	{
@@ -373,8 +374,20 @@ void CCharacter::FireWeapon()
 		// if we Hit anything, we have to wait for the reload
 		if(Hits)
 		{
-			float FireDelay = GetTuning(GetOverriddenTuneZone())->m_HammerHitFireDelay;
+			FireDelay = GetTuning(GetOverriddenTuneZone())->m_HammerHitFireDelay;
 			m_ReloadTimer = FireDelay * GameWorld()->GameTickSpeed() / 1000;
+		}
+
+		if(GameWorld()->m_WorldConfig.m_IsInfClass)
+		{
+			switch(m_InfClassClass)
+			{
+			case PLAYERCLASS_SCIENTIST:
+				FireDelay = 500;
+				break;
+			default:
+				break;
+			}
 		}
 	}
 	break;
@@ -406,6 +419,8 @@ void CCharacter::FireWeapon()
 				vec2 Recoil = Direction * (-MaxSpeed / 5.0f);
 				SaturateVelocity(Recoil, MaxSpeed);
 			}
+
+			FireDelay = m_Core.m_Jetpack ? 50 : 125;
 		}
 	}
 	break;
@@ -441,6 +456,7 @@ void CCharacter::FireWeapon()
 					-1 // SoundImpact
 				);
 			}
+			FireDelay = 250;
 		}
 		else if(GameWorld()->m_WorldConfig.m_IsVanilla)
 		{
@@ -464,6 +480,7 @@ void CCharacter::FireWeapon()
 					-1 //SoundImpact
 				);
 			}
+			FireDelay = 250;
 		}
 		else if(GameWorld()->m_WorldConfig.m_IsDDRace)
 		{
@@ -484,10 +501,14 @@ void CCharacter::FireWeapon()
 			switch(GetPlayerClass())
 			{
 			case PLAYERCLASS_MERCENARY:
+				Explosive = false;
+				FireDelay = 250;
+				break;
 			case PLAYERCLASS_MEDIC:
 			case PLAYERCLASS_NINJA:
 			case PLAYERCLASS_SCIENTIST:
 				Explosive = false;
+				FireDelay = 500;
 				break;
 			default:
 				break;
@@ -514,8 +535,12 @@ void CCharacter::FireWeapon()
 
 		if(GameWorld()->m_WorldConfig.m_IsInfClass)
 		{
+			FireDelay = 800;
 			switch(GetPlayerClass())
 			{
+			case PLAYERCLASS_MERCENARY:
+				FireDelay = 200;
+				break;
 			case PLAYERCLASS_SCIENTIST:
 				LaserReach = LaserReach * 0.6f;
 				break;
@@ -534,6 +559,7 @@ void CCharacter::FireWeapon()
 				break;
 			case PLAYERCLASS_LOOPER:
 				LaserReach = LaserReach * 0.7f;
+				FireDelay = 250;
 				break;
 			default:
 				break;
@@ -570,8 +596,8 @@ void CCharacter::FireWeapon()
 
 	if(!m_ReloadTimer)
 	{
-		float FireDelay;
-		GetTuning(GetOverriddenTuneZone())->Get(offsetof(CTuningParams, m_HammerFireDelay) / sizeof(CTuneParam) + m_Core.m_ActiveWeapon, &FireDelay);
+		if(!FireDelay)
+			GetTuning(GetOverriddenTuneZone())->Get(offsetof(CTuningParams, m_HammerFireDelay) / sizeof(CTuneParam) + m_Core.m_ActiveWeapon, &FireDelay);
 
 		m_ReloadTimer = FireDelay * GameWorld()->GameTickSpeed() / 1000;
 	}
