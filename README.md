@@ -1,3 +1,27 @@
+[![Infclass](https://infclass.github.io/assets/logo720.png)](https://infclass.github.io)
+
+Infclass client is a DDNet client fork with the follow infclass-specific features:
+- Kill assistance in kill messages
+- Custom weapon icons for kill messages
+- Client-side prediction for hook and infclass weapons (Settings -> DDNet -> AntiPing)
+- Client-side rendering for Scientist Mine and Soldier Bomb
+- Infclass-specific binds (see Settings->Controls; the binds enabled only for the infclass gametype)
+- Indicator for own structures (bombs, walls, mines, turrets, etc)
+- Player hook protection icons
+- Custom HUD for Scientist, Hero, Looper, and Engineer classes
+- Custom skin for Ninja class
+- Custom skin for Ghost class (with smooth walking animation and semi-transparency for "invisible" state)
+- Custom Infclass entities texture
+- Custom infected hook appearance
+- Human class menu is visible in entities mode
+- Initial Infclass *tiles* support for the map editor
+- Fixed the pistol and shotgun bullets rendering in demo playback
+- Other smaller features and fixes
+
+The client is supposed to be fully compatible with DDNet and behaves identically on all servers except Infclass.
+
+Below is the upstream DDNet README file content.
+
 [![DDraceNetwork](https://ddnet.org/ddnet-small.png)](https://ddnet.org) [![](https://github.com/ddnet/ddnet/workflows/Build/badge.svg)](https://github.com/ddnet/ddnet/actions?query=workflow%3ABuild+event%3Apush+branch%3Amaster) [![](https://codecov.io/gh/ddnet/ddnet/branch/master/graph/badge.svg)](https://codecov.io/gh/ddnet/ddnet/branch/master)
 
 Our own flavor of DDRace, a Teeworlds mod. See the [website](https://ddnet.org) for more information.
