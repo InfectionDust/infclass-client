@@ -3155,6 +3155,8 @@ ColorRGBA CalculateNameColor(ColorHSLA TextColorHSL)
 
 void CGameClient::UpdatePrediction()
 {
+	m_Teams.m_IsInfclass = m_GameInfo.m_InfClass;
+
 	m_GameWorld.m_WorldConfig.m_IsVanilla = m_GameInfo.m_PredictVanilla;
 	m_GameWorld.m_WorldConfig.m_IsDDRace = m_GameInfo.m_PredictDDRace;
 	m_GameWorld.m_WorldConfig.m_IsFNG = m_GameInfo.m_PredictFNG;
@@ -3638,6 +3640,11 @@ void CGameClient::ProcessInfClassPlayerInfo(int ClientId, const CNetObj_InfClass
 	CClientData *pClient = &m_aClients[ClientId];
 	pClient->m_InfClassPlayerFlags = pPlayerData->m_Flags;
 	pClient->m_InfClassPlayerClass = pPlayerData->m_Class;
+
+	bool Infected = pClient->m_InfClassPlayerFlags & INFCLASS_PLAYER_FLAG_INFECTED;
+	bool Protected = !(pClient->m_InfClassPlayerFlags & INFCLASS_PLAYER_FLAG_HOOK_PROTECTION_OFF);
+	m_Teams.SetInfected(ClientId, Infected);
+	m_Teams.SetProtected(ClientId, Protected);
 }
 
 void CGameClient::ProcessInfClassClassInfo(int ClientId, const CNetObj_InfClassClassInfo *pClassInfo)
