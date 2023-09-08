@@ -376,7 +376,7 @@ void CGameWorld::CreateExplosion(vec2 Pos, int Owner, int Weapon, bool NoDamage,
 
 bool CGameWorld::IsLocalTeam(int OwnerId) const
 {
-	return OwnerId < 0 || m_Teams.CanCollide(m_LocalClientId, OwnerId);
+	return OwnerId < 0 || m_Teams.m_IsInfclass || m_Teams.CanCollide(m_LocalClientId, OwnerId);
 }
 
 void CGameWorld::NetObjBegin(CTeamsCore Teams, int LocalClientId)
