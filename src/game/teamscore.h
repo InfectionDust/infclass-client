@@ -33,6 +33,7 @@ public:
 
 	bool SameTeam(int ClientId1, int ClientId2) const;
 
+	bool CanHook(int HookerId, int TargetId) const;
 	bool CanKeepHook(int ClientId1, int ClientId2) const;
 	bool CanCollide(int ClientId1, int ClientId2) const;
 
