@@ -351,7 +351,7 @@ void CCharacterCore::Tick(bool UseInput, bool DoDeferredTick)
 			for(int i = 0; i < MAX_CLIENTS; i++)
 			{
 				CCharacterCore *pCharCore = m_pWorld->m_apCharacters[i];
-				if(!pCharCore || pCharCore == this || (!(m_Super || pCharCore->m_Super) && ((m_Id != -1 && !m_pTeams->CanCollide(i, m_Id)) || pCharCore->m_Solo || m_Solo)))
+				if(!pCharCore || pCharCore == this || (!(m_Super || pCharCore->m_Super) && ((m_Id != -1 && !m_pTeams->CanHook(m_Id, i)) || pCharCore->m_Solo || m_Solo)))
 					continue;
 
 				vec2 ClosestPoint;
