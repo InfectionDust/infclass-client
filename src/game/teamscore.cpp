@@ -26,7 +26,19 @@ void CTeamsCore::Team(int ClientId, int Team)
 
 bool CTeamsCore::CanHook(int HookerId, int TargetId) const
 {
-	return CanCollide(HookerId, TargetId);
+	if(m_IsInfclass)
+	{
+		if(m_aIsInfected[HookerId] != m_aIsInfected[TargetId])
+			return true;
+		
+		return !m_aIsProtected[TargetId];
+	}
+
+	if(m_aTeam[HookerId] == (m_IsDDRace16 ? VANILLA_TEAM_SUPER : TEAM_SUPER) || m_aTeam[TargetId] == (m_IsDDRace16 ? VANILLA_TEAM_SUPER : TEAM_SUPER) || HookerId == TargetId)
+		return true;
+	if(m_aIsSolo[HookerId] || m_aIsSolo[TargetId])
+		return false;
+	return m_aTeam[HookerId] == m_aTeam[TargetId];
 }
 
 bool CTeamsCore::CanKeepHook(int ClientId1, int ClientId2) const
@@ -38,6 +50,21 @@ bool CTeamsCore::CanKeepHook(int ClientId1, int ClientId2) const
 
 bool CTeamsCore::CanCollide(int ClientId1, int ClientId2) const
 {
+	if(m_IsInfclass)
+	{
+		if(ClientId1 == ClientId2)
+			return true;
+
+		if(m_aIsInfected[ClientId1] != m_aIsInfected[ClientId2])
+			return true;
+
+		// Only infected can collide
+		if(!m_aIsInfected[ClientId1])
+			return false;
+
+		return !m_aIsProtected[ClientId1] && !m_aIsProtected[ClientId2];
+	}
+
 	if(m_aTeam[ClientId1] == (m_IsDDRace16 ? VANILLA_TEAM_SUPER : TEAM_SUPER) || m_aTeam[ClientId2] == (m_IsDDRace16 ? VANILLA_TEAM_SUPER : TEAM_SUPER) || ClientId1 == ClientId2)
 		return true;
 	if(m_aIsSolo[ClientId1] || m_aIsSolo[ClientId2])
@@ -48,6 +75,7 @@ bool CTeamsCore::CanCollide(int ClientId1, int ClientId2) const
 void CTeamsCore::Reset()
 {
 	m_IsDDRace16 = false;
+	m_IsInfclass = false;
 
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
@@ -56,6 +84,9 @@ void CTeamsCore::Reset()
 		else
 			m_aTeam[i] = TEAM_FLOCK;
 		m_aIsSolo[i] = false;
+
+		m_aIsInfected[i] = false;
+		m_aIsProtected[i] = false;
 	}
 }
 
@@ -70,4 +101,15 @@ bool CTeamsCore::GetSolo(int ClientId) const
 	if(ClientId < 0 || ClientId >= MAX_CLIENTS)
 		return false;
 	return m_aIsSolo[ClientId];
+}
+
+void CTeamsCore::SetInfected(int ClientId, bool Value)
+{
+	dbg_assert(ClientId >= 0 && ClientId < MAX_CLIENTS, "Invalid client id");
+	m_aIsInfected[ClientId] = Value;
+}
+void CTeamsCore::SetProtected(int ClientId, bool Value)
+{
+	dbg_assert(ClientId >= 0 && ClientId < MAX_CLIENTS, "Invalid client id");
+	m_aIsProtected[ClientId] = Value;
 }

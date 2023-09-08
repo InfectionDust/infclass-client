@@ -26,8 +26,12 @@ class CTeamsCore
 	int m_aTeam[MAX_CLIENTS];
 	bool m_aIsSolo[MAX_CLIENTS];
 
+	bool m_aIsInfected[MAX_CLIENTS];
+	bool m_aIsProtected[MAX_CLIENTS];
+
 public:
 	bool m_IsDDRace16;
+	bool m_IsInfclass;
 
 	CTeamsCore();
 
@@ -43,6 +47,9 @@ public:
 	void Reset();
 	void SetSolo(int ClientId, bool Value);
 	bool GetSolo(int ClientId) const;
+
+	void SetInfected(int ClientId, bool Value);
+	void SetProtected(int ClientId, bool Value);
 };
 
 #endif
