@@ -1707,6 +1707,7 @@ set(EXPECTED_DATA
   skins/whis.png
   skins/x_ninja.png
   skins/x_spec.png
+  skins/zombie.png
   skins7/beaver.json
   skins7/bluekitty.json
   skins7/bluestripe.json
