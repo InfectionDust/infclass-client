@@ -2822,6 +2822,10 @@ CSkinDescriptor CGameClient::CClientData::ToSkinDescriptor() const
 			str_copy(SkinDescriptor.m_aSkinName, "ghost");
 			SkinDescriptor.m_Flags |= CSkinDescriptor::FLAG_IC_CUSTOM;
 			break;
+		case PLAYERCLASS_TANK:
+			str_copy(SkinDescriptor.m_aSkinName, "zombie");
+			SkinDescriptor.m_Flags |= CSkinDescriptor::FLAG_IC_CUSTOM;
+			break;
 		default:
 			str_copy(SkinDescriptor.m_aSkinName, m_aSkinName);
 			break;
