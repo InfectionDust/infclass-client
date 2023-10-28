@@ -46,6 +46,7 @@ GunTypes = ["UNFREEZE", "EXPLOSIVE", "FREEZE", "EXPFREEZE"]
 
 InfClassPlayerFlags = ["INFECTED", "HOOK_PROTECTION_OFF"]
 InfClassObjectFlags = ["HAS_SECOND_POSITION"]
+InfClassClassInfoFlags = ["IS_INVISIBLE"]
 
 Emoticons = ["OOP", "EXCLAMATION", "HEARTS", "DROP", "DOTDOT", "MUSIC", "SORRY", "GHOST", "SUSHI", "SPLATTEE", "DEVILTEE", "ZOMG", "ZZZ", "WTF", "EYES", "QUESTION"]
 
@@ -103,6 +104,7 @@ Flags = [
 	Flags("LASERFLAG", LaserFlags),
 	Flags("INFCLASS_PLAYER_FLAG", InfClassPlayerFlags),
 	Flags("INFCLASS_OBJECT_FLAG", InfClassObjectFlags),
+	Flags("INFCLASS_CLASSINFO_FLAG", InfClassClassInfoFlags),
 ]
 
 Objects = [
