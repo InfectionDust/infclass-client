@@ -439,6 +439,7 @@ public:
 		int m_InfClassPlayerClass;
 		bool m_InfClassCustomSkin;
 
+		int m_InfClassClassFlags;
 		int m_InfClassClassData1;
 
 		char m_aName[MAX_NAME_LENGTH];
