@@ -45,8 +45,9 @@ DraggerTypes = ["WEAK", "WEAK_NW", "NORMAL", "NORMAL_NW", "STRONG", "STRONG_NW"]
 GunTypes = ["UNFREEZE", "EXPLOSIVE", "FREEZE", "EXPFREEZE"]
 
 InfClassPlayerFlags = ["INFECTED", "HOOK_PROTECTION_OFF"]
-InfClassObjectFlags = ["HAS_SECOND_POSITION"]
+InfClassObjectFlags = ["HAS_SECOND_POSITION", "RELY_ON_CLIENTSIDE_RENDERING"]
 InfClassClassInfoFlags = ["IS_INVISIBLE"]
+InfClassObjectTypes = ["CUSTOM", "LASER_WALL", "LOOPER_WALL", "SOLDIER_BOMB", "SCIENTIST_MINE", "BIOLOGIST_MINE", "MERCENARY_BOMB", "TURRET"]
 
 Emoticons = ["OOP", "EXCLAMATION", "HEARTS", "DROP", "DOTDOT", "MUSIC", "SORRY", "GHOST", "SUSHI", "SPLATTEE", "DEVILTEE", "ZOMG", "ZZZ", "WTF", "EYES", "QUESTION"]
 
@@ -89,6 +90,7 @@ Enums = [
 	Enum("LASERDRAGGERTYPE", DraggerTypes),
 	Enum("LASERGUNTYPE", GunTypes),
 	Enum("TEAM", Teams, -2),
+	Enum("INFCLASS_OBJECT_TYPE", InfClassObjectTypes),
 ]
 
 Flags = [
@@ -252,13 +254,18 @@ Objects = [
 	]),
 
 	NetObjectEx("InfClassObject", "object@infclass", [
-		NetIntAny("m_Flags"),
-		NetIntRange("m_Owner", -1, 'MAX_CLIENTS-1'),
-		NetIntAny("m_X"),
-		NetIntAny("m_Y"),
-		NetIntAny("m_X2"),
-		NetIntAny("m_Y2"),
-	]),
+		NetIntAny("m_Flags", default=0),
+		NetIntRange("m_Owner", -1, 'MAX_CLIENTS-1', default=-1),
+		NetIntAny("m_X", default=0),
+		NetIntAny("m_Y", default=0),
+		NetIntAny("m_X2", default=0),
+		NetIntAny("m_Y2", default=0),
+		NetIntAny("m_Type", default=0),
+		NetIntAny("m_StartTick", default=0),
+		NetIntAny("m_EndTick", default=0),
+		NetIntAny("m_ProximityRadius", default=0),
+		NetIntAny("m_Data1", default=0),
+	], validate_size=False),
 
 	NetObjectEx("InfClassPlayer", "player@infclass", [
 		NetIntAny("m_Flags"),
@@ -504,6 +511,12 @@ Messages = [
 		NetIntRange("m_Assistant", -1, 'MAX_CLIENTS-1'),
 		NetIntAny("m_InfDamageType"),
 		NetIntRange("m_Weapon", -3, 'NUM_WEAPONS-1'),
+	]),
+
+	NetMessageEx("InfClass_ServerParams", "server-params1@infclass", [
+		NetIntAny("m_Version", default=0),
+		NetIntRange("m_WhiteHoleMinKills", 0, 255, default=0),
+		NetIntRange("m_SoldierBombs", 0, 255, default=0),
 	]),
 
 	### Client messages
