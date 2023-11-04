@@ -47,6 +47,7 @@ GunTypes = ["UNFREEZE", "EXPLOSIVE", "FREEZE", "EXPFREEZE"]
 InfClassPlayerFlags = ["INFECTED", "HOOK_PROTECTION_OFF"]
 InfClassObjectFlags = ["HAS_SECOND_POSITION"]
 InfClassClassInfoFlags = ["IS_INVISIBLE"]
+InfClassObjectTypes = ["CUSTOM", "LASER_WALL", "LOOPER_WALL", "SOLDIER_BOMB", "SCIENTIST_MINE", "BIOLOGIST_MINE", "MERCENARY_BOMB", "TURRET"]
 
 Emoticons = ["OOP", "EXCLAMATION", "HEARTS", "DROP", "DOTDOT", "MUSIC", "SORRY", "GHOST", "SUSHI", "SPLATTEE", "DEVILTEE", "ZOMG", "ZZZ", "WTF", "EYES", "QUESTION"]
 
@@ -89,6 +90,7 @@ Enums = [
 	Enum("LASERDRAGGERTYPE", DraggerTypes),
 	Enum("LASERGUNTYPE", GunTypes),
 	Enum("TEAM", Teams, -2),
+	Enum("INFCLASS_OBJECT_TYPE", InfClassObjectTypes),
 ]
 
 Flags = [
@@ -252,13 +254,18 @@ Objects = [
 	]),
 
 	NetObjectEx("InfClassObject", "object@infclass", [
-		NetIntAny("m_Flags"),
-		NetIntRange("m_Owner", -1, 'MAX_CLIENTS-1'),
-		NetIntAny("m_X"),
-		NetIntAny("m_Y"),
-		NetIntAny("m_X2"),
-		NetIntAny("m_Y2"),
-	]),
+		NetIntAny("m_Flags", 0),
+		NetIntRange("m_Owner", -1, 'MAX_CLIENTS-1', -1),
+		NetIntAny("m_X", 0),
+		NetIntAny("m_Y", 0),
+		NetIntAny("m_X2", 0),
+		NetIntAny("m_Y2", 0),
+		NetIntAny("m_Type", 0),
+		NetIntAny("m_StartTick", 0),
+		NetIntAny("m_EndTick", 0),
+		NetIntAny("m_ProximityRadius", 0),
+		NetIntAny("m_Data1", 0),
+	], validate_size=False),
 
 	NetObjectEx("InfClassPlayer", "player@infclass", [
 		NetIntAny("m_Flags"),
@@ -498,6 +505,20 @@ Messages = [
 		NetIntRange("m_Total", 0, 'MAX_CLIENTS'),
 	]),
 
+	NetMessageEx("Inf_KillMsg", "kill-ex1@infclass", [
+		NetIntRange("m_Victim", 0, 'MAX_CLIENTS-1'),
+		NetIntRange("m_Killer", -1, 'MAX_CLIENTS-1'),
+		NetIntRange("m_Assistant", -1, 'MAX_CLIENTS-1'),
+		NetIntAny("m_InfDamageType"),
+		NetIntRange("m_Weapon", -3, 'NUM_WEAPONS-1'),
+	]),
+
+	NetMessageEx("InfClass_ServerParams", "server-params1@infclass", [
+		NetIntAny("m_Version", 0),
+		NetIntRange("m_WhiteHoleMinKills", 0, 255, 0),
+		NetIntRange("m_SoldierBombs", 0, 255, 0),
+	]),
+
 	### Client messages
 	NetMessage("Cl_Say", [
 		NetBool("m_Team"),
@@ -573,14 +594,6 @@ Messages = [
 
 	NetMessageEx("Sv_MyOwnMessage", "my-own-message@heinrich5991.de", [
 		NetIntAny("m_Test"),
-	]),
-
-	NetMessageEx("Inf_KillMsg", "kill-ex1@infclass", [
-		NetIntRange("m_Victim", 0, 'MAX_CLIENTS-1'),
-		NetIntRange("m_Killer", -1, 'MAX_CLIENTS-1'),
-		NetIntRange("m_Assistant", -1, 'MAX_CLIENTS-1'),
-		NetIntAny("m_InfDamageType"),
-		NetIntRange("m_Weapon", -3, 'NUM_WEAPONS-1'),
 	]),
 
 	NetMessageEx("Cl_ShowDistance", "show-distance@netmsg.ddnet.tw", [
