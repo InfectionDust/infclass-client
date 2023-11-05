@@ -16,6 +16,7 @@ class CItems : public CComponent
 	void RenderLaser(const CLaserData *pCurrent, bool IsPredicted = false);
 	void RenderInfclassObject(const struct CNetObj_InfClassObject *pCurrent, bool IsPredicted = false);
 	void RenderSciMine(const struct CNetObj_InfClassObject *pCurrent, bool IsPredicted);
+	void RenderSoldierBomb(const struct CNetObj_InfClassObject *pCurrent, bool IsPredicted);
 
 	int m_ItemsQuadContainerIndex;
 

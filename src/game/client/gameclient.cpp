@@ -672,6 +672,7 @@ void CGameClient::OnReset()
 	m_InfClassHeroGiftTick = -1;
 	m_InfclassGameInfoVersion = 0;
 	m_InfClassWhiteHoleMinKills = 0;
+	m_InfClassSoldierBombs = 0;
 
 	m_Teams.Reset();
 	m_GameWorld.Clear();
@@ -1054,6 +1055,7 @@ void CGameClient::OnMessage(int MsgId, CUnpacker *pUnpacker, int Conn, bool Dumm
 
 		m_InfclassGameParamsVersion = pMsg->m_Version;
 		m_InfClassWhiteHoleMinKills = pMsg->m_WhiteHoleMinKills;
+		m_InfClassSoldierBombs = pMsg->m_SoldierBombs;
 		return;
 	}
 

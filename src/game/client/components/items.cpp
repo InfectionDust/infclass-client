@@ -369,6 +369,9 @@ void CItems::RenderInfclassObject(const CNetObj_InfClassObject *pCurrent, bool I
 		case INFCLASS_OBJECT_TYPE_SCIENTIST_MINE:
 			RenderSciMine(pCurrent, IsPredicted);
 			break;
+		case INFCLASS_OBJECT_TYPE_SOLDIER_BOMB:
+			RenderSoldierBomb(pCurrent, IsPredicted);
+			break;
 		default:
 			break;
 		}
@@ -518,6 +521,41 @@ void CItems::RenderSciMine(const CNetObj_InfClassObject *pCurrent, bool IsPredic
 		float RandomRadius = random_float() * (Radius - 4.0f);
 		vec2 Pos = ObjPos + random_direction() * RandomRadius;
 		m_pClient->m_Effects.BulletTrail(Pos, Alpha);
+	}
+}
+
+void CItems::RenderSoldierBomb(const CNetObj_InfClassObject *pCurrent, bool IsPredicted)
+{
+	float Radius = fx2f(pCurrent->m_ProximityRadius);
+	vec2 ObjPos(pCurrent->m_X, pCurrent->m_Y);
+
+	float ObjectRenderTick = 0;
+	if(IsPredicted)
+		ObjectRenderTick = Client()->PredGameTick(g_Config.m_ClDummy) - pCurrent->m_StartTick + Client()->PredIntraGameTick(g_Config.m_ClDummy);
+	else
+		ObjectRenderTick = Client()->GameTick(g_Config.m_ClDummy) - pCurrent->m_StartTick + Client()->IntraGameTick(g_Config.m_ClDummy);
+
+	float Time = ObjectRenderTick / (Client()->GameTickSpeed() * 0.75f);
+	float BaseAngle = fmodf(Time * pi / 2, 2.0f * pi);
+
+	float Alpha = 1.0f;
+	int CurWeapon = WEAPON_GRENADE;
+	if(GameClient()->m_GameSkin.m_aSpriteWeaponProjectiles[CurWeapon].IsValid())
+	{
+		Graphics()->TextureSet(GameClient()->m_GameSkin.m_aSpriteWeaponProjectiles[CurWeapon]);
+		Graphics()->SetColor(1.f, 1.f, 1.f, Alpha);
+
+		int NumBombs = m_pClient->m_InfClassSoldierBombs;
+		float AngleStep = 2.0f * pi / NumBombs;
+		int ActiveBombs = clamp(pCurrent->m_Data1, 0, NumBombs);
+		for(int i = 0; i < ActiveBombs; ++i)
+		{
+			const float Angle = BaseAngle + AngleStep * i;
+			const vec2 Pos = ObjPos + direction(Angle) * Radius;
+			m_pClient->m_Effects.SmokeTrail(Pos, vec2(0, 0), Alpha);
+			Graphics()->QuadsSetRotation(Angle + pi / 2);
+			Graphics()->RenderQuadContainerAsSprite(m_ItemsQuadContainerIndex, m_aProjectileOffset[CurWeapon], Pos.x, Pos.y);
+		}
 	}
 }
 
