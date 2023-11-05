@@ -1751,6 +1751,15 @@ void CHud::RenderClassExtraHud(int ClientId)
 		}
 	}
 
+	if(PlayerClass == PLAYERCLASS_SCIENTIST)
+	{
+		if(m_pClient->m_InfClassWhiteHoleMinKills == 0)
+		{
+			// WH disabled or the server didn't tell us
+			return;
+		}
+	}
+
 	int Lines = 0;
 	int WallType = 0;
 	switch(PlayerClass)
@@ -1762,6 +1771,9 @@ void CHud::RenderClassExtraHud(int ClientId)
 	case PLAYERCLASS_LOOPER:
 		Lines = 1;
 		WallType = PlayerClass;
+		break;
+	case PLAYERCLASS_SCIENTIST:
+		Lines = 1;
 		break;
 	default:
 		return;
@@ -1922,6 +1934,26 @@ void CHud::RenderClassExtraHud(int ClientId)
 		}
 	}
 
+	if(PlayerClass == PLAYERCLASS_SCIENTIST)
+	{
+		const int ProgressionFixed = pClientData->m_InfClassClassData1;
+		const float Prog = fx2f(ProgressionFixed);
+		const float Max = m_pClient->m_InfClassWhiteHoleMinKills;
+
+		char aBuffer[32];
+		if(Prog < 0)
+		{
+			str_copy(aBuffer, "N/A");
+		}
+		else
+		{
+			str_format(aBuffer, sizeof(aBuffer), "%.1f/%.1f", std::min(Prog, Max), Max);
+		}
+
+		TextRender()->TextColor(1, 1, 1, 1);
+		TextRender()->Text(X + TextXOffset, Y + TextYOffset, FontSize, aBuffer, -1.0f);
+	}
+	else
 	{
 		char aBuffer[32];
 		const int PlayerTimerEndTick = pClientData->m_InfClassClassData1;

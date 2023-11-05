@@ -671,6 +671,7 @@ void CGameClient::OnReset()
 
 	m_InfClassHeroGiftTick = -1;
 	m_InfclassGameInfoVersion = 0;
+	m_InfClassWhiteHoleMinKills = 0;
 
 	m_Teams.Reset();
 	m_GameWorld.Clear();
@@ -1043,6 +1044,16 @@ void CGameClient::OnMessage(int MsgId, CUnpacker *pUnpacker, int Conn, bool Dumm
 			str_format(aBuf, sizeof(aBuf), "dropped weird message '%s' (%d), failed on '%s'", m_NetObjHandler.GetMsgName(MsgId), MsgId, m_NetObjHandler.FailedMsgOn());
 			Console()->Print(IConsole::OUTPUT_LEVEL_ADDINFO, "client", aBuf);
 		}
+		return;
+	}
+	if(MsgId == NETMSGTYPE_INFCLASS_SERVERPARAMS)
+	{
+		CNetMsg_InfClass_ServerParams *pMsg = (CNetMsg_InfClass_ServerParams *)pRawMsg;
+		if(pMsg->m_Version <= 0)
+			return;
+
+		m_InfclassGameParamsVersion = pMsg->m_Version;
+		m_InfClassWhiteHoleMinKills = pMsg->m_WhiteHoleMinKills;
 		return;
 	}
 
