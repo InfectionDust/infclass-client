@@ -320,6 +320,9 @@ public:
 
 	int m_DemoSpecId;
 
+	int m_InfclassGameParamsVersion = 0;
+	int m_InfClassWhiteHoleMinKills = 0;
+
 	vec2 m_LocalCharacterPos;
 
 	// predicted players
