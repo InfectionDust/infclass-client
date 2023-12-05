@@ -62,7 +62,7 @@ void CLayerGroup::Render()
 	MapScreen();
 	IGraphics *pGraphics = m_pMap->m_pEditor->Graphics();
 
-	if(m_UseClipping)
+	if(m_UseClipping && !m_ZonesGroup)
 	{
 		float aPoints[4];
 		m_pMap->m_pGameGroup->Mapping(aPoints);

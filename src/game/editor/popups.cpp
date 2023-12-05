@@ -627,7 +627,10 @@ CUi::EPopupMenuFunctionResult CEditor::PopupGroup(void *pContext, CUIRect View, 
 		static CLineInput s_NameInput;
 		s_NameInput.SetBuffer(pEditor->m_Map.m_vpGroups[pEditor->m_SelectedGroup]->m_aName, sizeof(pEditor->m_Map.m_vpGroups[pEditor->m_SelectedGroup]->m_aName));
 		if(pEditor->DoEditBox(&s_NameInput, &Button, 10.0f))
+		{
+			pEditor->ProcessPTUM();
 			pEditor->m_Map.OnModify();
+		}
 	}
 
 	CProperty aProps[] = {
@@ -645,7 +648,7 @@ CUi::EPopupMenuFunctionResult CEditor::PopupGroup(void *pContext, CUIRect View, 
 	};
 
 	// cut the properties that aren't needed
-	if(pEditor->GetSelectedGroup()->m_GameGroup)
+	if(pEditor->GetSelectedGroup()->m_GameGroup || pEditor->GetSelectedGroup()->m_ZonesGroup)
 		aProps[(int)EGroupProp::PROP_POS_X].m_pName = nullptr;
 
 	static int s_aIds[(int)EGroupProp::NUM_PROPS] = {0};
@@ -665,7 +668,7 @@ CUi::EPopupMenuFunctionResult CEditor::PopupGroup(void *pContext, CUIRect View, 
 	}
 
 	// these can not be changed on the game group
-	if(!pEditor->GetSelectedGroup()->m_GameGroup)
+	if(!pEditor->GetSelectedGroup()->m_GameGroup && !pEditor->GetSelectedGroup()->m_ZonesGroup)
 	{
 		if(Prop == EGroupProp::PROP_PARA_X)
 		{
@@ -766,7 +769,10 @@ CUi::EPopupMenuFunctionResult CEditor::PopupLayer(void *pContext, CUIRect View, 
 		static CLineInput s_NameInput;
 		s_NameInput.SetBuffer(pCurrentLayer->m_aName, sizeof(pCurrentLayer->m_aName));
 		if(pEditor->DoEditBox(&s_NameInput, &EditBox, 10.0f))
+		{
+			pEditor->ProcessPTUM();
 			pEditor->m_Map.OnModify();
+		}
 	}
 
 	// spacing if any button was rendered
