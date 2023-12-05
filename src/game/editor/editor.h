@@ -236,6 +236,20 @@ public:
 	int m_Max;
 };
 
+class CPTUMEntityTexture
+{
+public:
+	CPTUMEntityTexture() = default;
+	CPTUMEntityTexture(const char *pName, IGraphics::CTextureHandle Handle) :
+		m_Handle(Handle)
+	{
+		str_copy(m_aName, pName);
+	}
+
+	IGraphics::CTextureHandle m_Handle;
+	char m_aName[12]{};
+};
+
 enum
 {
 	PROPTYPE_NULL = 0,
@@ -297,6 +311,7 @@ class CEditor : public IEditor
 	bool m_EditorWasUsedBefore = false;
 
 	IGraphics::CTextureHandle m_EntitiesTexture;
+	std::vector<CPTUMEntityTexture> m_PTUMEntityTextures;
 
 	IGraphics::CTextureHandle m_FrontTexture;
 	IGraphics::CTextureHandle m_TeleTexture;
@@ -846,6 +861,7 @@ public:
 	ECursorType m_CursorType;
 
 	IGraphics::CTextureHandle GetEntitiesTexture();
+	IGraphics::CTextureHandle GetPTUMEntitiesTexture(const char *pName);
 
 	std::shared_ptr<CLayerGroup> m_pBrush;
 	std::shared_ptr<CLayerTiles> m_pTilesetPicker;
@@ -1077,6 +1093,7 @@ public:
 	void RenderFileDialog();
 
 	void SelectGameLayer();
+	void ProcessPTUM();
 	std::vector<int> SortImages();
 
 	void DoAudioPreview(CUIRect View, const void *pPlayPauseButtonId, const void *pStopButtonId, const void *pSeekBarId, int SampleId);
@@ -1160,6 +1177,7 @@ public:
 	static const char *ExplainFNG(int Tile, int Layer);
 	static const char *ExplainVanilla(int Tile, int Layer);
 	static const char *Explain(EExplanation Explanation, int Tile, int Layer);
+	static const char *Explain(const char *pZoneType, int Tile);
 
 	// Zooming
 	void ZoomAdaptOffsetX(float ZoomFactor, const CUIRect &View);
