@@ -37,6 +37,7 @@ public:
 		m_Type = Other.m_Type;
 		m_Visible = true;
 		m_Readonly = false;
+		m_pPtumZoneType = Other.m_pPtumZoneType;
 	}
 
 	virtual ~CLayer()
@@ -76,6 +77,7 @@ public:
 
 	bool m_Readonly;
 	bool m_Visible;
+	const char *m_pPtumZoneType = nullptr;
 };
 
 #endif
