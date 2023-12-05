@@ -686,3 +686,8 @@ const char *CEditor::Explain(EExplanation Explanation, int Tile, int Layer)
 	dbg_assert(false, "logic error");
 	return nullptr;
 }
+
+const char *CEditor::Explain(const char *pZoneType, int Tile)
+{
+	return nullptr;
+}
