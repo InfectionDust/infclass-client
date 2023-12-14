@@ -23,7 +23,7 @@ else()
 endif()
 
 project(Infclass
-  VERSION 0.1.8
+  VERSION 0.2
 )
 
 set(ORIGINAL_CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH})
