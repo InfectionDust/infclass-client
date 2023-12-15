@@ -2399,6 +2399,15 @@ void CClient::ResetDDNetInfoTask()
 	}
 }
 
+void CClient::ResetInfclassInfoTask()
+{
+	if(m_pInfClassInfoTask)
+	{
+		m_pInfClassInfoTask->Abort();
+		m_pInfClassInfoTask = nullptr;
+	}
+}
+
 typedef std::tuple<int, int, int> TVersion;
 static const TVersion gs_InvalidVersion = std::make_tuple(-1, -1, -1);
 
@@ -2430,6 +2439,7 @@ void CClient::LoadDDNetInfo()
 		return;
 
 	const json_value &DDNetInfo = *pDDNetInfo;
+#if 0
 	const json_value &CurrentVersion = DDNetInfo["version"];
 	if(CurrentVersion.type == json_string)
 	{
@@ -2458,6 +2468,7 @@ void CClient::LoadDDNetInfo()
 		str_copy(m_aNews, News);
 	}
 
+#endif
 	const json_value &MapDownloadUrl = DDNetInfo["map-download-url"];
 	if(MapDownloadUrl.type == json_string)
 	{
@@ -2501,6 +2512,43 @@ void CClient::LoadDDNetInfo()
 	}
 	const json_value &WarnPngliteIncompatibleImages = DDNetInfo["warn-pnglite-incompatible-images"];
 	Graphics()->WarnPngliteIncompatibleImages(WarnPngliteIncompatibleImages.type == json_boolean && (bool)WarnPngliteIncompatibleImages);
+}
+
+void CClient::LoadInfclassInfo()
+{
+	const json_value *pInfclassInfo = m_ServerBrowser.LoadInfclassInfo();
+
+	if(!pInfclassInfo)
+		return;
+	
+	const json_value &InfclassInfo = *pInfclassInfo;
+	const json_value &CurrentVersion = InfclassInfo["version"];
+	if(CurrentVersion.type == json_string)
+	{
+		char aNewVersionStr[64];
+		str_copy(aNewVersionStr, CurrentVersion, sizeof(aNewVersionStr));
+		char aCurVersionStr[64];
+		str_copy(aCurVersionStr, GAME_RELEASE_VERSION, sizeof(aCurVersionStr));
+		if(ToVersion(aNewVersionStr) > ToVersion(aCurVersionStr))
+		{
+			str_copy(m_aVersionStr, CurrentVersion, sizeof(m_aVersionStr));
+		}
+		else
+		{
+			m_aVersionStr[0] = '0';
+			m_aVersionStr[1] = '\0';
+		}
+	}
+
+	const json_value &News = InfclassInfo["news"];
+	if(News.type == json_string)
+	{
+		// Only mark news button if something new was added to the news
+		if(m_aNews[0] && str_find(m_aNews, News) == nullptr)
+			g_Config.m_UiUnreadNews = true;
+
+		str_copy(m_aNews, News, sizeof(m_aNews));
+	}
 }
 
 int CClient::ConnectNetTypes() const
@@ -2906,6 +2954,27 @@ void CClient::Update()
 		}
 	}
 
+	if(m_pInfClassInfoTask)
+	{
+		if(m_pInfClassInfoTask->State() == EHttpState::DONE)
+		{
+			if(m_ServerBrowser.InfclassInfoSha256() == m_pInfClassInfoTask->ResultSha256())
+			{
+				log_debug("client/info", "DDNet info already up-to-date");
+			}
+			else
+			{
+				log_debug("client/info", "Loading new Infclass info");
+				LoadInfclassInfo();
+			}
+			ResetInfclassInfoTask();
+		}
+		else if(m_pInfClassInfoTask->State() == EHttpState::ERROR || m_pInfClassInfoTask->State() == EHttpState::ABORTED)
+		{
+			ResetInfclassInfoTask();
+		}
+	}
+
 	if(State() == IClient::STATE_ONLINE)
 	{
 		if(!m_EditJobs.empty())
@@ -3091,6 +3160,7 @@ void CClient::Run()
 	m_ServerBrowser.OnInit();
 	// loads the existing ddnet info file if it exists
 	LoadDDNetInfo();
+	LoadInfclassInfo();
 
 	LoadDebugFont();
 
@@ -5058,6 +5128,24 @@ void CClient::RequestDDNetInfo()
 	// Use ipv4 so we can know the ingame ip addresses of players before they join game servers
 	m_pDDNetInfoTask->IpResolve(IPRESOLVE::V4);
 	Http()->Run(m_pDDNetInfoTask);
+
+	RequestInfclassInfo();
+}
+
+void CClient::RequestInfclassInfo()
+{
+	if(m_pInfClassInfoTask && !m_pInfClassInfoTask->Done())
+		return;
+
+	char aUrl[256];
+	str_format(aUrl, sizeof(aUrl), "%s/info.json", g_Config.m_ClInfcUpdatesUrl);
+
+	m_pInfClassInfoTask = HttpGetFile(aUrl, Storage(), INFCLASS_INFO_FILE, IStorage::TYPE_SAVE);
+	m_pInfClassInfoTask->Timeout(CTimeout{10000, 0, 500, 10});
+	m_pInfClassInfoTask->SkipByFileTime(false); // Always re-download.
+	// Use ipv4 so we can know the ingame ip addresses of players before they join game servers
+	m_pInfClassInfoTask->IpResolve(IPRESOLVE::V4);
+	Http()->Run(m_pInfClassInfoTask);
 }
 
 int CClient::GetPredictionTime()
