@@ -77,6 +77,7 @@ CServerBrowser::~CServerBrowser()
 	free(m_ppServerlist);
 	free(m_pSortedServerlist);
 	json_value_free(m_pDDNetInfo);
+	json_value_free(m_pInfclassInfo);
 
 	delete m_pHttp;
 	m_pHttp = nullptr;
@@ -1363,6 +1364,12 @@ const json_value *CServerBrowser::LoadDDNetInfo()
 	return m_pDDNetInfo;
 }
 
+const json_value *CServerBrowser::LoadInfclassInfo()
+{
+	LoadInfclassInfoJson();
+	return m_pInfclassInfo;
+}
+
 void CServerBrowser::LoadDDNetInfoJson()
 {
 	void *pBuf;
@@ -1390,6 +1397,31 @@ void CServerBrowser::LoadDDNetInfoJson()
 		log_error("serverbrowser", "invalid info root");
 		json_value_free(m_pDDNetInfo);
 		m_pDDNetInfo = nullptr;
+	}
+}
+
+void CServerBrowser::LoadInfclassInfoJson()
+{
+	void *pBuf;
+	unsigned Length;
+	if(!m_pStorage->ReadFile(INFCLASS_INFO_FILE, IStorage::TYPE_SAVE, &pBuf, &Length))
+		return;
+
+	json_value_free(m_pInfclassInfo);
+	json_settings JsonSettings{};
+	char aError[256];
+	m_pInfclassInfo = json_parse_ex(&JsonSettings, static_cast<json_char *>(pBuf), Length, aError);
+	free(pBuf);
+
+	if(m_pInfclassInfo == nullptr)
+	{
+		log_error("serverbrowser", "invalid infclass info json: '%s'", aError);
+	}
+	else if(m_pInfclassInfo->type != json_object)
+	{
+		log_error("serverbrowser", "invalid infclass info root");
+		json_value_free(m_pInfclassInfo);
+		m_pInfclassInfo = nullptr;
 	}
 }
 

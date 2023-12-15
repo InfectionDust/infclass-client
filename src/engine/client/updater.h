@@ -10,8 +10,8 @@
 #include <memory>
 #include <string>
 
-#define CLIENT_EXEC "DDNet"
-#define SERVER_EXEC "DDNet-Server"
+#define CLIENT_EXEC "Infclass"
+#define SERVER_EXEC "Infclass-Server"
 
 #if defined(CONF_FAMILY_WINDOWS)
 #define PLAT_EXT ".exe"
