@@ -252,9 +252,12 @@ public:
 	const CServerInfo *SortedGet(int Index) const override;
 
 	const json_value *LoadDDNetInfo();
+	const json_value *LoadInfclassInfo();
 	void LoadDDNetInfoJson();
+	void LoadInfclassInfoJson();
 	void LoadDDNetLocation();
 	void LoadDDNetServers();
+
 	void UpdateServerFilteredPlayers(CServerInfo *pInfo) const;
 	void UpdateServerFriends(CServerInfo *pInfo) const;
 	void UpdateServerCommunity(CServerInfo *pInfo) const;
@@ -270,6 +273,7 @@ public:
 
 	bool DDNetInfoAvailable() const override { return m_pDDNetInfo != nullptr; }
 	SHA256_DIGEST DDNetInfoSha256() const override { return m_DDNetInfoSha256; }
+	SHA256_DIGEST InfclassInfoSha256() const override { return m_InfclassInfoSha256; }
 
 	ICommunityCache &CommunityCache() override { return m_CommunityCache; }
 	const ICommunityCache &CommunityCache() const override { return m_CommunityCache; }
@@ -333,6 +337,9 @@ private:
 
 	json_value *m_pDDNetInfo = nullptr;
 	SHA256_DIGEST m_DDNetInfoSha256 = SHA256_ZEROED;
+
+	json_value *m_pInfclassInfo{};
+	SHA256_DIGEST m_InfclassInfoSha256 = SHA256_ZEROED;
 
 	CServerEntry *m_pFirstReqServer; // request list
 	CServerEntry *m_pLastReqServer;
