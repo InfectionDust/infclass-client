@@ -78,18 +78,20 @@ bool CMenusKeyBinder::OnInput(const IInput::CEvent &Event)
 void CMenus::RenderSettingsGeneral(CUIRect MainView)
 {
 	char aBuf[128 + IO_MAX_PATH_LENGTH];
-	CUIRect Label, Button, Left, Right, Game, ClientSettings;
+	CUIRect Label, Button, Left, Right, Game, ClientSettings, Menu;
 	MainView.HSplitTop(150.0f, &Game, &ClientSettings);
+	Game.VSplitMid(&Game, &Menu, 20.0f);
 
+	constexpr float VerticalSpacing(5.0f);
 	// game
 	{
 		// headline
 		Game.HSplitTop(30.0f, &Label, &Game);
 		Ui()->DoLabel(&Label, Localize("Game"), 20.0f, TEXTALIGN_ML);
-		Game.HSplitTop(5.0f, nullptr, &Game);
-		Game.VSplitMid(&Left, nullptr, 20.0f);
+		Left = Game;
 
 		// dynamic camera
+		Left.HSplitTop(VerticalSpacing, nullptr, &Left);
 		Left.HSplitTop(20.0f, &Button, &Left);
 		const bool IsDyncam = g_Config.m_ClDyncam || g_Config.m_ClMouseFollowfactor > 0;
 		if(DoButton_CheckBox(&g_Config.m_ClDyncam, Localize("Dynamic Camera"), IsDyncam, &Button))
@@ -106,7 +108,7 @@ void CMenus::RenderSettingsGeneral(CUIRect MainView)
 		}
 
 		// smooth dynamic camera
-		Left.HSplitTop(5.0f, nullptr, &Left);
+		Left.HSplitTop(VerticalSpacing, nullptr, &Left);
 		Left.HSplitTop(20.0f, &Button, &Left);
 		if(g_Config.m_ClDyncam)
 		{
@@ -125,16 +127,39 @@ void CMenus::RenderSettingsGeneral(CUIRect MainView)
 		}
 
 		// weapon pickup
-		Left.HSplitTop(5.0f, nullptr, &Left);
+		Left.HSplitTop(VerticalSpacing, nullptr, &Left);
 		Left.HSplitTop(20.0f, &Button, &Left);
 		if(DoButton_CheckBox(&g_Config.m_ClAutoswitchWeapons, Localize("Switch weapon on pickup"), g_Config.m_ClAutoswitchWeapons, &Button))
 			g_Config.m_ClAutoswitchWeapons ^= 1;
 
 		// weapon out of ammo autoswitch
-		Left.HSplitTop(5.0f, nullptr, &Left);
+		Left.HSplitTop(VerticalSpacing, nullptr, &Left);
 		Left.HSplitTop(20.0f, &Button, &Left);
 		if(DoButton_CheckBox(&g_Config.m_ClAutoswitchWeaponsOutOfAmmo, Localize("Switch weapon when out of ammo"), g_Config.m_ClAutoswitchWeaponsOutOfAmmo, &Button))
 			g_Config.m_ClAutoswitchWeaponsOutOfAmmo ^= 1;
+	}
+
+	// Menu
+	{
+		// headline
+		Menu.HSplitTop(30.0f, &Label, &Menu);
+		Ui()->DoLabel(&Label, Localize("Menu"), 20.0f, TEXTALIGN_ML);
+
+		// skip main menu
+		Menu.HSplitTop(VerticalSpacing, nullptr, &Menu);
+		Menu.HSplitTop(20.0f, &Button, &Menu);
+		if(DoButton_CheckBox(&g_Config.m_ClSkipStartMenu, Localize("Skip the main menu"), g_Config.m_ClSkipStartMenu, &Button))
+			g_Config.m_ClSkipStartMenu ^= 1;
+
+		Menu.HSplitTop(VerticalSpacing, nullptr, &Menu);
+		Menu.HSplitTop(20.0f, &Button, &Menu);
+		if(DoButton_CheckBox(&g_Config.m_ClPreferIconButtons, Localize("Prefer icon buttons over text labels"), g_Config.m_ClPreferIconButtons, &Button))
+			g_Config.m_ClPreferIconButtons ^= 1;
+
+		Menu.HSplitTop(VerticalSpacing, nullptr, &Menu);
+		Menu.HSplitTop(20.0f, &Button, &Menu);
+		if(DoButton_CheckBox(&g_Config.m_ClEnableCommunities, Localize("Enable 'Communities' browser feature"), g_Config.m_ClEnableCommunities, &Button))
+			g_Config.m_ClEnableCommunities ^= 1;
 	}
 
 	// client
@@ -145,12 +170,6 @@ void CMenus::RenderSettingsGeneral(CUIRect MainView)
 		ClientSettings.HSplitTop(5.0f, nullptr, &ClientSettings);
 		ClientSettings.VSplitMid(&Left, &Right, 20.0f);
 
-		// skip main menu
-		Left.HSplitTop(20.0f, &Button, &Left);
-		if(DoButton_CheckBox(&g_Config.m_ClSkipStartMenu, Localize("Skip the main menu"), g_Config.m_ClSkipStartMenu, &Button))
-			g_Config.m_ClSkipStartMenu ^= 1;
-
-		Left.HSplitTop(10.0f, nullptr, &Left);
 		Left.HSplitTop(20.0f, &Button, &Left);
 		str_copy(aBuf, " ");
 		str_append(aBuf, Localize("Hz", "Hertz"));
