@@ -667,30 +667,62 @@ void CMenus::RenderMenubar(CUIRect Box, IClient::EClientState ClientState)
 		GameClient()->m_Tooltips.DoToolTip(&s_StartButton, &Button, Localize("Main menu"));
 
 		const float BrowserButtonWidth = 75.0f;
-		Box.VSplitLeft(10.0f, nullptr, &Box);
-		Box.VSplitLeft(BrowserButtonWidth, &Button, &Box);
-		static CButtonContainer s_InternetButton;
-		if(DoButton_MenuTab(&s_InternetButton, FONT_ICON_EARTH_AMERICAS, ActivePage == PAGE_INTERNET, &Button, IGraphics::CORNER_T, &m_aAnimatorsBigPage[BIG_TAB_INTERNET]))
-		{
-			NewPage = PAGE_INTERNET;
-		}
-		GameClient()->m_Tooltips.DoToolTip(&s_InternetButton, &Button, Localize("Internet"));
 
-		Box.VSplitLeft(BrowserButtonWidth, &Button, &Box);
-		static CButtonContainer s_LanButton;
-		if(DoButton_MenuTab(&s_LanButton, FONT_ICON_NETWORK_WIRED, ActivePage == PAGE_LAN, &Button, IGraphics::CORNER_T, &m_aAnimatorsBigPage[BIG_TAB_LAN]))
+		if(g_Config.m_ClPreferIconButtons)
 		{
-			NewPage = PAGE_LAN;
-		}
-		GameClient()->m_Tooltips.DoToolTip(&s_LanButton, &Button, Localize("LAN"));
+			Box.VSplitLeft(10.0f, nullptr, &Box);
+			Box.VSplitLeft(BrowserButtonWidth, &Button, &Box);
+			static CButtonContainer s_InternetButton;
+			if(DoButton_MenuTab(&s_InternetButton, FONT_ICON_EARTH_AMERICAS, ActivePage == PAGE_INTERNET, &Button, IGraphics::CORNER_T, &m_aAnimatorsBigPage[BIG_TAB_INTERNET]))
+			{
+				NewPage = PAGE_INTERNET;
+			}
+			GameClient()->m_Tooltips.DoToolTip(&s_InternetButton, &Button, Localize("Internet"));
 
-		Box.VSplitLeft(BrowserButtonWidth, &Button, &Box);
-		static CButtonContainer s_FavoritesButton;
-		if(DoButton_MenuTab(&s_FavoritesButton, FONT_ICON_STAR, ActivePage == PAGE_FAVORITES, &Button, IGraphics::CORNER_T, &m_aAnimatorsBigPage[BIG_TAB_FAVORITES]))
-		{
-			NewPage = PAGE_FAVORITES;
+			Box.VSplitLeft(BrowserButtonWidth, &Button, &Box);
+			static CButtonContainer s_LanButton;
+			if(DoButton_MenuTab(&s_LanButton, FONT_ICON_NETWORK_WIRED, ActivePage == PAGE_LAN, &Button, IGraphics::CORNER_T, &m_aAnimatorsBigPage[BIG_TAB_LAN]))
+			{
+				NewPage = PAGE_LAN;
+			}
+			GameClient()->m_Tooltips.DoToolTip(&s_LanButton, &Button, Localize("LAN"));
+
+			Box.VSplitLeft(BrowserButtonWidth, &Button, &Box);
+			static CButtonContainer s_FavoritesButton;
+			if(DoButton_MenuTab(&s_FavoritesButton, FONT_ICON_STAR, ActivePage == PAGE_FAVORITES, &Button, IGraphics::CORNER_T, &m_aAnimatorsBigPage[BIG_TAB_FAVORITES]))
+			{
+				NewPage = PAGE_FAVORITES;
+			}
+			GameClient()->m_Tooltips.DoToolTip(&s_FavoritesButton, &Button, Localize("Favorites"));
 		}
-		GameClient()->m_Tooltips.DoToolTip(&s_FavoritesButton, &Button, Localize("Favorites"));
+		else
+		{
+			TextRender()->SetRenderFlags(0);
+			TextRender()->SetFontPreset(EFontPreset::DEFAULT_FONT);
+			Box.VSplitLeft(10.0f, nullptr, &Box);
+			Box.VSplitLeft(100.0f, &Button, &Box);
+			static CButtonContainer s_InternetButton;
+			if(DoButton_MenuTab(&s_InternetButton, Localize("Internet"), ActivePage == PAGE_INTERNET, &Button, IGraphics::CORNER_T, &m_aAnimatorsBigPage[BIG_TAB_INTERNET]))
+			{
+				NewPage = PAGE_INTERNET;
+			}
+
+			Box.VSplitLeft(80.0f, &Button, &Box);
+			static CButtonContainer s_LanButton;
+			if(DoButton_MenuTab(&s_LanButton, Localize("LAN"), ActivePage == PAGE_LAN, &Button, IGraphics::CORNER_T, &m_aAnimatorsBigPage[BIG_TAB_LAN]))
+			{
+				NewPage = PAGE_LAN;
+			}
+
+			Box.VSplitLeft(110.0f, &Button, &Box);
+			static CButtonContainer s_FavoritesButton;
+			if(DoButton_MenuTab(&s_FavoritesButton, Localize("Favorites"), ActivePage == PAGE_FAVORITES, &Button, IGraphics::CORNER_T, &m_aAnimatorsBigPage[BIG_TAB_FAVORITES]))
+			{
+				NewPage = PAGE_FAVORITES;
+			}
+			TextRender()->SetFontPreset(EFontPreset::ICON_FONT);
+			TextRender()->SetRenderFlags(ETextRenderFlags::TEXT_RENDER_FLAG_ONLY_ADVANCE_WIDTH | ETextRenderFlags::TEXT_RENDER_FLAG_NO_X_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_Y_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_PIXEL_ALIGNMENT | ETextRenderFlags::TEXT_RENDER_FLAG_NO_OVERSIZE);
+		}
 
 		int MaxPage = PAGE_FAVORITES + ServerBrowser()->FavoriteCommunities().size();
 		if(
