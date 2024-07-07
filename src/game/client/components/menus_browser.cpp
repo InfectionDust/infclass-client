@@ -120,6 +120,7 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 		int m_Direction;
 		float m_Width;
 		CUIRect m_Rect;
+		bool m_Visible{true};
 	};
 
 	enum
@@ -168,6 +169,9 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 		{COL_PING, IServerBrowser::SORT_PING, Localizable("Ping"), 1, 40.0f, {0}},
 	};
 
+	s_aCols[COL_FLAG_OFFICIAL + 1].m_Visible = g_Config.m_ClEnableCommunities == 0;
+	s_aCols[COL_COMMUNITY + 1].m_Visible = g_Config.m_ClEnableCommunities;
+
 	const int NumCols = std::size(s_aCols);
 
 	// do layout
@@ -175,7 +179,10 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 	{
 		if(s_aCols[i].m_Direction == -1)
 		{
-			Headers.VSplitLeft(s_aCols[i].m_Width, &s_aCols[i].m_Rect, &Headers);
+			if(s_aCols[i].m_Visible)
+			{
+				Headers.VSplitLeft(s_aCols[i].m_Width, &s_aCols[i].m_Rect, &Headers);
+			}
 
 			if(i + 1 < NumCols)
 			{
@@ -324,6 +331,9 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 		char aTemp[64];
 		for(const auto &Col : s_aCols)
 		{
+			if(!Col.m_Visible)
+				continue;
+
 			CUIRect Button;
 			Button.x = Col.m_Rect.x;
 			Button.y = ListItem.m_Rect.y;
@@ -1801,7 +1811,7 @@ void CMenus::RenderServerbrowser(CUIRect MainView)
 	MainView.VSplitRight(205.0f, &ServerList, &ToolBox);
 	ServerList.VSplitRight(5.0f, &ServerList, nullptr);
 
-	if((g_Config.m_UiPage == PAGE_INTERNET || g_Config.m_UiPage == PAGE_FAVORITES) && !ServerBrowser()->Communities().empty())
+	if(g_Config.m_ClEnableCommunities && (g_Config.m_UiPage == PAGE_INTERNET || g_Config.m_UiPage == PAGE_FAVORITES) && !ServerBrowser()->Communities().empty())
 	{
 		CUIRect CommunityFilter;
 		ToolBox.HSplitTop(19.0f + 4.0f * 17.0f + CScrollRegion::HEIGHT_MAGIC_FIX, &CommunityFilter, &ToolBox);
