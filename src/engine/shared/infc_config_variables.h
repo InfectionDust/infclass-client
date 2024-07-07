@@ -10,6 +10,7 @@
 
 #endif
 
+MACRO_CONFIG_INT(ClPreferIconButtons, cl_prefer_icon_buttons, 1, 1, 1, CFGFLAG_SAVE | CFGFLAG_CLIENT, "Prefer icon buttons over text labels")
 MACRO_CONFIG_INT(ClEnableCommunities, cl_enable_communities, 1, 1, 1, CFGFLAG_SAVE | CFGFLAG_CLIENT, "Enable the Communities browser feature")
 MACRO_CONFIG_STR(ClAssetInfclass, cl_asset_infclass, 50, "default", CFGFLAG_SAVE | CFGFLAG_CLIENT, "The asset for infclass")
 MACRO_CONFIG_STR(ClInfcUpdatesUrl, cl_infc_updates_url, 256,  "https://infclass.github.io/files", CFGFLAG_SAVE | CFGFLAG_CLIENT, "The client updates URL")

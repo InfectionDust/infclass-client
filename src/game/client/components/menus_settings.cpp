@@ -2692,8 +2692,8 @@ void CMenus::RenderSettingsAppearance(CUIRect MainView)
 
 		// ***** Infclass HUD ***** //
 		RightView.HSplitTop(MarginBetweenViews, nullptr, &RightView);
-		RightView.HSplitTop(HeadlineHeight, &Label, &RightView);
-		Ui()->DoLabel(&Label, Localize("Infclass HUD"), HeadlineFontSize, TEXTALIGN_LEFT);
+		Ui()->DoLabel_AutoLineSize(Localize("Infclass HUD"), HeadlineFontSize,
+			TEXTALIGN_LEFT, &RightView, HeadlineHeight);
 		RightView.HSplitTop(MarginSmall, nullptr, &LeftView);
 
 		// Switches of various DDRace HUD elements
