@@ -1789,6 +1789,9 @@ const std::vector<CCommunity> &CServerBrowser::Communities() const
 
 const CCommunity *CServerBrowser::Community(const char *pCommunityId) const
 {
+	if(g_Config.m_ClEnableCommunities == 0)
+		return nullptr;
+
 	const auto Community = std::find_if(Communities().begin(), Communities().end(), [pCommunityId](const auto &Elem) {
 		return str_comp(Elem.Id(), pCommunityId) == 0;
 	});
