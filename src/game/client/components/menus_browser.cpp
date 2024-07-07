@@ -126,6 +126,7 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 	{
 		COL_FLAG_LOCK = 0,
 		COL_FLAG_FAV,
+		COL_FLAG_OFFICIAL,
 		COL_COMMUNITY,
 		COL_NAME,
 		COL_GAMETYPE,
@@ -136,6 +137,8 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 
 		UI_ELEM_LOCK_ICON = 0,
 		UI_ELEM_FAVORITE_ICON,
+		UI_ELEM_OFFICIAL_ICON_1,
+		UI_ELEM_OFFICIAL_ICON_2,
 		UI_ELEM_NAME_1,
 		UI_ELEM_NAME_2,
 		UI_ELEM_NAME_3,
@@ -154,6 +157,7 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 		{-1, -1, "", -1, 2.0f, {0}},
 		{COL_FLAG_LOCK, -1, "", -1, 14.0f, {0}},
 		{COL_FLAG_FAV, -1, "", -1, 14.0f, {0}},
+		{COL_FLAG_OFFICIAL, -1, "", -1, 14.0f, {0}},
 		{COL_COMMUNITY, -1, "", -1, 28.0f, {0}},
 		{COL_NAME, IServerBrowser::SORT_NAME, Localizable("Name"), 0, 50.0f, {0}},
 		{COL_GAMETYPE, IServerBrowser::SORT_GAMETYPE, Localizable("Type"), 1, 50.0f, {0}},
@@ -339,6 +343,14 @@ void CMenus::RenderServerbrowserServerList(CUIRect View, bool &WasListboxItemAct
 				if(pItem->m_Favorite != TRISTATE::NONE)
 				{
 					RenderBrowserIcons(*pUiElement->Rect(UI_ELEM_FAVORITE_ICON), &Button, ColorRGBA(1.0f, 0.85f, 0.3f, 1.0f), TextRender()->DefaultTextOutlineColor(), FONT_ICON_STAR, TEXTALIGN_MC);
+				}
+			}
+			else if(Id == COL_FLAG_OFFICIAL)
+			{
+				if(str_comp(pItem->m_aCommunityId, IServerBrowser::COMMUNITY_DDNET) == 0)
+				{
+					RenderBrowserIcons(*pUiElement->Rect(UI_ELEM_OFFICIAL_ICON_1), &Button, ColorRGBA(0.4f, 0.7f, 0.94f, 1.0f), ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f), FONT_ICON_CERTIFICATE, TEXTALIGN_MC);
+					RenderBrowserIcons(*pUiElement->Rect(UI_ELEM_OFFICIAL_ICON_2), &Button, ColorRGBA(0.0f, 0.0f, 0.0f, 1.0f), ColorRGBA(0.0f, 0.0f, 0.0f, 0.0f), FONT_ICON_CHECK, TEXTALIGN_MC, true);
 				}
 			}
 			else if(Id == COL_COMMUNITY)
