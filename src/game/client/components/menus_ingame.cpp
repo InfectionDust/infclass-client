@@ -1175,6 +1175,24 @@ void CMenus::RenderInGameNetwork(CUIRect MainView)
 			NewPage = PAGE_FAVORITES;
 		}
 		GameClient()->m_Tooltips.DoToolTip(&s_FavoritesButton, &Button, Localize("Favorites"));
+
+		size_t FavoriteCommunityIndex = 0;
+		static CButtonContainer s_aFavoriteCommunityButtons[5];
+		static_assert(std::size(s_aFavoriteCommunityButtons) == (size_t)PAGE_FAVORITE_COMMUNITY_5 - PAGE_FAVORITE_COMMUNITY_1 + 1);
+		for(const CCommunity *pCommunity : ServerBrowser()->FavoriteCommunities())
+		{
+			TabBar.VSplitLeft(75.0f, &Button, &TabBar);
+			const int Page = PAGE_FAVORITE_COMMUNITY_1 + FavoriteCommunityIndex;
+			if(DoButton_MenuTab(&s_aFavoriteCommunityButtons[FavoriteCommunityIndex], FONT_ICON_ELLIPSIS, g_Config.m_UiPage == Page, &Button, IGraphics::CORNER_NONE, nullptr, nullptr, nullptr, nullptr, 10.0f, FindCommunityIcon(pCommunity->Id())))
+			{
+				NewPage = Page;
+			}
+			GameClient()->m_Tooltips.DoToolTip(&s_aFavoriteCommunityButtons[FavoriteCommunityIndex], &Button, pCommunity->Name());
+
+			++FavoriteCommunityIndex;
+			if(FavoriteCommunityIndex >= std::size(s_aFavoriteCommunityButtons))
+				break;
+		}
 	}
 	else
 	{
@@ -1201,24 +1219,35 @@ void CMenus::RenderInGameNetwork(CUIRect MainView)
 		{
 			NewPage = PAGE_FAVORITES;
 		}
-	}
 
-	size_t FavoriteCommunityIndex = 0;
-	static CButtonContainer s_aFavoriteCommunityButtons[5];
-	static_assert(std::size(s_aFavoriteCommunityButtons) == (size_t)PAGE_FAVORITE_COMMUNITY_5 - PAGE_FAVORITE_COMMUNITY_1 + 1);
-	for(const CCommunity *pCommunity : ServerBrowser()->FavoriteCommunities())
-	{
-		TabBar.VSplitLeft(75.0f, &Button, &TabBar);
-		const int Page = PAGE_FAVORITE_COMMUNITY_1 + FavoriteCommunityIndex;
-		if(DoButton_MenuTab(&s_aFavoriteCommunityButtons[FavoriteCommunityIndex], FONT_ICON_ELLIPSIS, g_Config.m_UiPage == Page, &Button, IGraphics::CORNER_NONE, nullptr, nullptr, nullptr, nullptr, 10.0f, FindCommunityIcon(pCommunity->Id())))
+		size_t FavoriteCommunityIndex = 0;
+		static CButtonContainer s_aFavoriteCommunityButtons[5];
+		static_assert(std::size(s_aFavoriteCommunityButtons) == (size_t)PAGE_FAVORITE_COMMUNITY_5 - PAGE_FAVORITE_COMMUNITY_1 + 1);
+		for(const CCommunity *pCommunity : ServerBrowser()->FavoriteCommunities())
 		{
-			NewPage = Page;
-		}
-		GameClient()->m_Tooltips.DoToolTip(&s_aFavoriteCommunityButtons[FavoriteCommunityIndex], &Button, pCommunity->Name());
+			TabBar.VSplitLeft(75.0f, &Button, &TabBar);
+			const int Page = PAGE_FAVORITE_COMMUNITY_1 + FavoriteCommunityIndex;
+			const char *pName = pCommunity->Name();
+			if(g_Config.m_ClEnableCommunities == 0)
+			{
+				if(str_comp(pCommunity->Id(), IServerBrowser::COMMUNITY_DDNET) == 0)
+				{
+					pName = "DDNet";
+				}
+				else if(str_comp(pCommunity->Id(), "kog") == 0)
+				{
+					pName = "KoG";
+				}
+			}
+			if(DoButton_MenuTab(&s_aFavoriteCommunityButtons[FavoriteCommunityIndex], pName, g_Config.m_UiPage == Page, &Button, IGraphics::CORNER_NONE, nullptr, nullptr, nullptr, nullptr, 10.0f, FindCommunityIcon(pCommunity->Id())))
+			{
+				NewPage = Page;
+			}
 
-		++FavoriteCommunityIndex;
-		if(FavoriteCommunityIndex >= std::size(s_aFavoriteCommunityButtons))
-			break;
+			++FavoriteCommunityIndex;
+			if(FavoriteCommunityIndex >= std::size(s_aFavoriteCommunityButtons))
+				break;
+		}
 	}
 
 	TextRender()->SetRenderFlags(0);
