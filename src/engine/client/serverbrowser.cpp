@@ -1813,6 +1813,28 @@ std::vector<const CCommunity *> CServerBrowser::SelectedCommunities() const
 
 std::vector<const CCommunity *> CServerBrowser::FavoriteCommunities() const
 {
+	if(g_Config.m_ClEnableCommunities == 0)
+	{
+		std::vector<const CCommunity *> vpFavorites;
+		auto FindCommunity = [this](const char *pCommunityId) -> const CCommunity * {
+			const auto CommunityIt = std::find_if(Communities().begin(), Communities().end(), [pCommunityId](const auto &Elem) {
+				return str_comp(Elem.Id(), pCommunityId) == 0;
+			});
+			return CommunityIt == Communities().end() ? nullptr : &(*CommunityIt);
+		};
+		static const std::vector<CCommunityId> vHardcoded{CCommunityId(IServerBrowser::COMMUNITY_DDNET), CCommunityId("kog")};
+
+		for(const auto &CommunityId : vHardcoded)
+		{
+			const CCommunity *pCommunity = FindCommunity(CommunityId.Id());
+			if(pCommunity)
+			{
+				vpFavorites.push_back(pCommunity);
+			}
+		}
+		return vpFavorites;
+	}
+
 	// This is done differently than SelectedCommunities because the favorite
 	// communities should be returned in the order specified by the user.
 	std::vector<const CCommunity *> vpFavorites;
