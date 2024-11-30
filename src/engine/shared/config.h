@@ -76,6 +76,7 @@ struct SConfigVariable
 	// Note that this only applies to the console command and the SetValue function,
 	// but the underlying config variable can still be modified programatically.
 	bool m_ReadOnly = false;
+	EConfigDomainId m_ConfigDomain{};
 
 	SConfigVariable(IConsole *pConsole, const char *pScriptName, EVariableType Type, int Flags, const char *pHelp) :
 		m_pConsole(pConsole),
@@ -197,8 +198,30 @@ class CConfigManager : public IConfigManager
 	IConsole *m_pConsole;
 	class IStorage *m_pStorage;
 
-	IOHANDLE m_ConfigFile;
-	bool m_Failed;
+	class CConfigDomain
+	{
+	public:
+		CConfigDomain(const char *pConfigFileName) :
+			m_pConfigFileName(pConfigFileName)
+		{
+		}
+
+		bool OpenTmpFile(IStorage *pStorage);
+		void CloseTmpFile();
+		void RenameTmpToConfig(IStorage *pStorage);
+
+		void WriteLine(const char *pLine);
+
+		const char *ConfigTmpFileName() const { return m_aConfigFileTmp; }
+
+	public:
+		std::string m_pConfigFileName{};
+		IOHANDLE m_ConfigFile{};
+		bool m_Failed{};
+
+	private:
+		char m_aConfigFileTmp[IO_MAX_PATH_LENGTH]{};
+	};
 
 	struct SCallback
 	{
@@ -216,6 +239,7 @@ class CConfigManager : public IConfigManager
 	std::vector<SConfigVariable *> m_vpAllVariables;
 	std::vector<SConfigVariable *> m_vpGameVariables;
 	std::vector<const char *> m_vpUnknownCommands;
+	std::vector<CConfigDomain> m_Domains;
 	CHeap m_ConfigHeap;
 
 	static void Con_Reset(IConsole::IResult *pResult, void *pUserData);
@@ -233,8 +257,9 @@ public:
 	CConfig *Values() override { return &g_Config; }
 
 	void RegisterCallback(SAVECALLBACKFUNC pfnFunc, void *pUserData) override;
+	EConfigDomainId RegisterConfigDomain(const char *pConfigFileName) override;
 
-	void WriteLine(const char *pLine) override;
+	void WriteLine(const char *pLine, EConfigDomainId ConfigDomainId = 0) override;
 
 	void StoreUnknownCommand(const char *pCommand) override;
 
