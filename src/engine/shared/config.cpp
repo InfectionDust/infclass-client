@@ -276,8 +276,8 @@ CConfigManager::CConfigManager()
 {
 	m_pConsole = nullptr;
 	m_pStorage = nullptr;
-	m_ConfigFile = nullptr;
-	m_Failed = false;
+
+	RegisterConfigDomain(CONFIG_FILE);
 }
 
 void CConfigManager::Init()
@@ -285,8 +285,10 @@ void CConfigManager::Init()
 	m_pConsole = Kernel()->RequestInterface<IConsole>();
 	m_pStorage = Kernel()->RequestInterface<IStorage>();
 
-	const auto &&AddVariable = [this](SConfigVariable *pVariable) {
+	EConfigDomainId ConfigDomainId{};
+	const auto &&AddVariable = [this, &ConfigDomainId](SConfigVariable *pVariable) {
 		m_vpAllVariables.push_back(pVariable);
+		pVariable->m_ConfigDomain = ConfigDomainId;
 		if((pVariable->m_Flags & CFGFLAG_GAME) != 0)
 			m_vpGameVariables.push_back(pVariable);
 		pVariable->Register();
@@ -364,21 +366,68 @@ void CConfigManager::SetReadOnly(const char *pScriptName, bool ReadOnly)
 	dbg_assert(false, "Invalid command for SetReadOnly: '%s'", pScriptName);
 }
 
+bool CConfigManager::CConfigDomain::OpenTmpFile(IStorage *pStorage)
+{
+	IStorage::FormatTmpPath(m_aConfigFileTmp, sizeof(m_aConfigFileTmp), m_pConfigFileName.c_str());
+	m_ConfigFile = pStorage->OpenFile(m_aConfigFileTmp, IOFLAG_WRITE, IStorage::TYPE_SAVE);
+
+	if(!m_ConfigFile)
+	{
+		log_error("config", "ERROR: opening %s failed", m_aConfigFileTmp);
+		return false;
+	}
+
+	m_Failed = false;
+	return true;
+}
+
+void CConfigManager::CConfigDomain::CloseTmpFile()
+{
+	if(io_sync(m_ConfigFile) != 0)
+	{
+		m_Failed = true;
+		log_error("config", "ERROR: synchronizing %s failed", m_aConfigFileTmp);
+	}
+
+	if(io_close(m_ConfigFile) != 0)
+	{
+		m_Failed = true;
+		log_error("config", "ERROR: closing %s failed", m_aConfigFileTmp);
+	}
+
+	m_ConfigFile = nullptr;
+}
+
+void CConfigManager::CConfigDomain::RenameTmpToConfig(IStorage *pStorage)
+{
+	if(!pStorage->RenameFile(m_aConfigFileTmp, m_pConfigFileName.c_str(), IStorage::TYPE_SAVE))
+	{
+		log_error("config", "ERROR: renaming %s to %s failed", m_aConfigFileTmp, m_pConfigFileName.c_str());
+		m_Failed = true;
+	}
+
+	log_info("config", "saved to %s", m_pConfigFileName.c_str());
+}
+
+void CConfigManager::CConfigDomain::WriteLine(const char *pLine)
+{
+	if(!m_ConfigFile ||
+		io_write(m_ConfigFile, pLine, str_length(pLine)) != static_cast<unsigned>(str_length(pLine)) ||
+		!io_write_newline(m_ConfigFile))
+	{
+		m_Failed = true;
+	}
+}
+
 bool CConfigManager::Save()
 {
 	if(!m_pStorage || !g_Config.m_ClSaveSettings)
 		return true;
 
-	char aConfigFileTmp[IO_MAX_PATH_LENGTH];
-	m_ConfigFile = m_pStorage->OpenFile(IStorage::FormatTmpPath(aConfigFileTmp, sizeof(aConfigFileTmp), CONFIG_FILE), IOFLAG_WRITE, IStorage::TYPE_SAVE);
-
-	if(!m_ConfigFile)
+	for(CConfigDomain &Domain : m_Domains)
 	{
-		log_error("config", "ERROR: opening %s failed", aConfigFileTmp);
-		return false;
+		Domain.OpenTmpFile(m_pStorage);
 	}
-
-	m_Failed = false;
 
 	char aLineBuf[2048];
 	for(const SConfigVariable *pVariable : m_vpAllVariables)
@@ -386,7 +435,7 @@ bool CConfigManager::Save()
 		if((pVariable->m_Flags & CFGFLAG_SAVE) != 0 && !pVariable->IsDefault())
 		{
 			pVariable->Serialize(aLineBuf, sizeof(aLineBuf));
-			WriteLine(aLineBuf);
+			WriteLine(aLineBuf, pVariable->m_ConfigDomain);
 		}
 	}
 
@@ -400,37 +449,38 @@ bool CConfigManager::Save()
 		WriteLine(pCommand);
 	}
 
-	if(m_Failed)
+	for(const CConfigDomain &Domain : m_Domains)
 	{
-		log_error("config", "ERROR: writing to %s failed", aConfigFileTmp);
+		if(Domain.m_Failed)
+		{
+			log_error("config", "ERROR: writing to %s failed", Domain.ConfigTmpFileName());
+		}
 	}
 
-	if(io_sync(m_ConfigFile) != 0)
+	for(CConfigDomain &Domain : m_Domains)
 	{
-		m_Failed = true;
-		log_error("config", "ERROR: synchronizing %s failed", aConfigFileTmp);
+		Domain.CloseTmpFile();
 	}
 
-	if(io_close(m_ConfigFile) != 0)
+	for(CConfigDomain &Domain : m_Domains)
 	{
-		m_Failed = true;
-		log_error("config", "ERROR: closing %s failed", aConfigFileTmp);
+		if(Domain.m_Failed)
+		{
+			log_error("config", "ERROR: writing to %s failed", Domain.ConfigTmpFileName());
+			continue;
+		}
+
+		Domain.RenameTmpToConfig(m_pStorage);
 	}
 
-	m_ConfigFile = nullptr;
-
-	if(m_Failed)
+	for(const CConfigDomain &Domain : m_Domains)
 	{
-		return false;
+		if(Domain.m_Failed)
+		{
+			return false;
+		}
 	}
 
-	if(!m_pStorage->RenameFile(aConfigFileTmp, CONFIG_FILE, IStorage::TYPE_SAVE))
-	{
-		log_error("config", "ERROR: renaming %s to " CONFIG_FILE " failed", aConfigFileTmp);
-		return false;
-	}
-
-	log_info("config", "saved to " CONFIG_FILE);
 	return true;
 }
 
@@ -439,14 +489,18 @@ void CConfigManager::RegisterCallback(SAVECALLBACKFUNC pfnFunc, void *pUserData)
 	m_vCallbacks.emplace_back(pfnFunc, pUserData);
 }
 
-void CConfigManager::WriteLine(const char *pLine)
+EConfigDomainId CConfigManager::RegisterConfigDomain(const char *pConfigFileName)
 {
-	if(!m_ConfigFile ||
-		io_write(m_ConfigFile, pLine, str_length(pLine)) != static_cast<unsigned>(str_length(pLine)) ||
-		!io_write_newline(m_ConfigFile))
-	{
-		m_Failed = true;
-	}
+	dbg_assert(m_pConsole == nullptr, "Config registration must be done before CConfigManager::Init()");
+
+	m_Domains.emplace_back(pConfigFileName);
+	return m_Domains.size() - 1;
+}
+
+void CConfigManager::WriteLine(const char *pLine, EConfigDomainId ConfigDomainId)
+{
+	CConfigDomain ConfigDomain = m_Domains.at(ConfigDomainId);
+	ConfigDomain.WriteLine(pLine);
 }
 
 void CConfigManager::StoreUnknownCommand(const char *pCommand)

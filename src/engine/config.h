@@ -5,6 +5,8 @@
 
 #include "kernel.h"
 
+using EConfigDomainId = int;
+
 class IConfigManager : public IInterface
 {
 	MACRO_INTERFACE("config")
@@ -20,8 +22,9 @@ public:
 	virtual class CConfig *Values() = 0;
 
 	virtual void RegisterCallback(SAVECALLBACKFUNC pfnFunc, void *pUserData) = 0;
+	virtual EConfigDomainId RegisterConfigDomain(const char *pConfigFileName) = 0;
 
-	virtual void WriteLine(const char *pLine) = 0;
+	virtual void WriteLine(const char *pLine, EConfigDomainId ConfigDomainId = 0) = 0;
 
 	virtual void StoreUnknownCommand(const char *pCommand) = 0;
 
