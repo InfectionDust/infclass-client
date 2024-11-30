@@ -3358,11 +3358,15 @@ void CClient::Run()
 	GameClient()->RenderShutdownMessage();
 	Disconnect();
 
-	if(!m_pConfigManager->Save())
+	std::vector<const char *> vFailedConfigFiles;
+	if(!m_pConfigManager->Save(&vFailedConfigFiles))
 	{
 		char aError[128];
-		str_format(aError, sizeof(aError), Localize("Saving settings to '%s' failed"), CONFIG_FILE);
-		m_vQuittingWarnings.emplace_back(Localize("Error saving settings"), aError);
+		for(const char *pConfigFileName : vFailedConfigFiles)
+		{
+			str_format(aError, sizeof(aError), Localize("Saving settings to '%s' failed"), pConfigFileName);
+			m_vQuittingWarnings.emplace_back(Localize("Error saving settings"), aError);
+		}
 	}
 
 	m_Fifo.Shutdown();
