@@ -253,7 +253,7 @@ public:
 	void Reset(const char *pScriptName) override;
 	void ResetGameSettings() override;
 	void SetReadOnly(const char *pScriptName, bool ReadOnly) override;
-	bool Save() override;
+	bool Save(std::vector<const char *> *pvFailedConfigFiles) override;
 	CConfig *Values() override { return &g_Config; }
 
 	void RegisterCallback(SAVECALLBACKFUNC pfnFunc, void *pUserData) override;
