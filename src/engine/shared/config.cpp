@@ -421,7 +421,7 @@ void CConfigManager::CConfigDomain::WriteLine(const char *pLine)
 	}
 }
 
-bool CConfigManager::Save()
+bool CConfigManager::Save(std::vector<const char *> *pvFailedConfigFiles)
 {
 	if(!m_pStorage || !g_Config.m_ClSaveSettings)
 		return true;
@@ -479,11 +479,11 @@ bool CConfigManager::Save()
 	{
 		if(Domain.m_Failed)
 		{
-			return false;
+			pvFailedConfigFiles->push_back(Domain.m_pConfigFileName.c_str());
 		}
 	}
 
-	return true;
+	return pvFailedConfigFiles->empty();
 }
 
 void CConfigManager::RegisterCallback(SAVECALLBACKFUNC pfnFunc, void *pUserData)
