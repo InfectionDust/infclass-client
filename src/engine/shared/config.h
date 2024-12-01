@@ -218,6 +218,7 @@ class CConfigManager : public IConfigManager
 		std::string m_pConfigFileName{};
 		IOHANDLE m_ConfigFile{};
 		bool m_Failed{};
+		bool m_SaveUnknownCommands{};
 
 	private:
 		char m_aConfigFileTmp[IO_MAX_PATH_LENGTH]{};
@@ -253,6 +254,7 @@ public:
 	void Reset(const char *pScriptName) override;
 	void ResetGameSettings() override;
 	void SetReadOnly(const char *pScriptName, bool ReadOnly) override;
+	bool Load(std::vector<const char *> *pvFailedConfigFiles) override;
 	bool Save(std::vector<const char *> *pvFailedConfigFiles) override;
 	CConfig *Values() override { return &g_Config; }
 

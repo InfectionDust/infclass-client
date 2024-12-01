@@ -278,6 +278,7 @@ CConfigManager::CConfigManager()
 	m_pStorage = nullptr;
 
 	RegisterConfigDomain(CONFIG_FILE);
+	m_Domains[0].m_SaveUnknownCommands = true;
 }
 
 void CConfigManager::Init()
@@ -419,6 +420,37 @@ void CConfigManager::CConfigDomain::WriteLine(const char *pLine)
 	{
 		m_Failed = true;
 	}
+}
+
+static bool SaveUnknownCommandCallback(const char *pCommand, void *pUser)
+{
+	CConfigManager *pConfigManager = static_cast<CConfigManager *>(pUser);
+	pConfigManager->StoreUnknownCommand(pCommand);
+	return true;
+}
+
+bool CConfigManager::Load(std::vector<const char *> *pvFailedConfigFiles)
+{
+	for(const CConfigDomain &Domain : m_Domains)
+	{
+		if(!m_pStorage->FileExists(Domain.m_pConfigFileName.c_str(), IStorage::TYPE_ALL))
+			continue;
+
+		if(Domain.m_SaveUnknownCommands)
+		{
+			m_pConsole->SetUnknownCommandCallback(SaveUnknownCommandCallback, this);
+		}
+		if(!m_pConsole->ExecuteFile(Domain.m_pConfigFileName.c_str()))
+		{
+			pvFailedConfigFiles->push_back(Domain.m_pConfigFileName.c_str());
+		}
+		if(Domain.m_SaveUnknownCommands)
+		{
+			m_pConsole->SetUnknownCommandCallback(IConsole::EmptyUnknownCommandCallback, nullptr);
+		}
+	}
+
+	return pvFailedConfigFiles->empty();
 }
 
 bool CConfigManager::Save(std::vector<const char *> *pvFailedConfigFiles)
