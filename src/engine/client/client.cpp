@@ -4545,13 +4545,6 @@ static bool UnknownArgumentCallback(const char *pCommand, void *pUser)
 	return false;
 }
 
-static bool SaveUnknownCommandCallback(const char *pCommand, void *pUser)
-{
-	CClient *pClient = static_cast<CClient *>(pUser);
-	pClient->ConfigManager()->StoreUnknownCommand(pCommand);
-	return true;
-}
-
 static Uint32 GetSdlMessageBoxFlags(IClient::EMessageBoxType Type)
 {
 	switch(Type)
@@ -4828,19 +4821,17 @@ int main(int argc, const char **argv)
 	// init client's interfaces
 	pClient->InitInterfaces();
 
-	// execute config file
-	if(pStorage->FileExists(CONFIG_FILE, IStorage::TYPE_ALL))
+	std::vector<const char *> vFailedConfigFiles;
+	if(!pConfigManager->Load(&vFailedConfigFiles))
 	{
-		pConsole->SetUnknownCommandCallback(SaveUnknownCommandCallback, pClient);
-		if(!pConsole->ExecuteFile(CONFIG_FILE))
+		char aError[128];
+		for(const char *pConfigFileName : vFailedConfigFiles)
 		{
-			const char *pError = "Failed to load config from '" CONFIG_FILE "'.";
-			log_error("client", "%s", pError);
-			pClient->ShowMessageBox("Config File Error", pError);
-			PerformAllCleanup();
-			return -1;
+			str_format(aError, sizeof(aError), "Failed to load config from '%s'.", pConfigFileName);
+			pClient->ShowMessageBox("Config File Error", aError);
 		}
-		pConsole->SetUnknownCommandCallback(IConsole::EmptyUnknownCommandCallback, nullptr);
+		PerformAllCleanup();
+		return -1;
 	}
 
 	// execute autoexec file

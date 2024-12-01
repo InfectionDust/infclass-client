@@ -20,6 +20,7 @@ public:
 	virtual void Reset(const char *pScriptName) = 0;
 	virtual void ResetGameSettings() = 0;
 	virtual void SetReadOnly(const char *pScriptName, bool ReadOnly) = 0;
+	virtual bool Load(std::vector<const char *> *pFailedConfigFiles) = 0;
 	virtual bool Save(std::vector<const char *> *pFailedConfigFiles) = 0;
 	virtual class CConfig *Values() = 0;
 
