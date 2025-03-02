@@ -537,13 +537,18 @@ void CCharacter::FireWeapon()
 		if(GameWorld()->m_WorldConfig.m_IsInfClass)
 		{
 			FireDelay = 800;
+			int Bounces = GetTuning(m_TuneZone)->m_LaserBounceNum;
+			bool Explosive = false;
 			switch(GetPlayerClass())
 			{
 			case PLAYERCLASS_MERCENARY:
 				FireDelay = 200;
+				Bounces = 0;
 				break;
 			case PLAYERCLASS_SCIENTIST:
 				LaserReach = LaserReach * 0.6f;
+				Bounces = 0;
+				Explosive = true;
 				break;
 			case PLAYERCLASS_BIOLOGIST:
 			{
@@ -567,11 +572,8 @@ void CCharacter::FireWeapon()
 			}
 
 			CLaser *pLaser = new CLaser(GameWorld(), m_Pos, Direction, LaserReach, GetCid(), WEAPON_LASER, CLaser::NoBounce);
-			if(GetPlayerClass() == PLAYERCLASS_SCIENTIST)
-			{
-				pLaser->SetBouncing(0);
-				pLaser->SetExplosive(true);
-			}
+			pLaser->SetBouncing(Bounces);
+			pLaser->SetExplosive(Explosive);
 			pLaser->EnableBounce();
 		}
 		else
