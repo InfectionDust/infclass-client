@@ -33,6 +33,7 @@ public:
 
 protected:
 	bool HitCharacter(vec2 From, vec2 To);
+	bool HitOwnerMercBomb(const vec2 &From, const vec2 &To);
 	void DoBounce();
 
 private:

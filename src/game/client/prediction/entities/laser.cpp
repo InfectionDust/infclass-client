@@ -35,6 +35,12 @@ CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEner
 
 bool CLaser::HitCharacter(vec2 From, vec2 To)
 {
+	if(GameWorld()->m_WorldConfig.m_IsInfClass)
+	{
+		// Ignore characters and only hit own bombs
+		return HitOwnerMercBomb(From, To);
+	}
+
 	static const vec2 StackedLaserShotgunBugSpeed = vec2(-2147483648.0f, -2147483648.0f);
 	vec2 At;
 	CCharacter *pOwnerChar = GameWorld()->GetCharacterById(m_Owner);
@@ -93,6 +99,37 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 		pHit->UnFreeze();
 	}
 	return true;
+}
+
+bool CLaser::HitOwnerMercBomb(const vec2 &From, const vec2 &To)
+{
+	CEntity *pObject = GameWorld()->FindFirst(CGameWorld::ENTTYPE_IC_PLACED_OBJECT);
+	for(; pObject; pObject = pObject->NextEntity())
+	{
+		const CIcPlacedObject *pIcObject = static_cast<CIcPlacedObject *>(pObject);
+		if(pIcObject->GetOwner() != m_Owner)
+			continue;
+		if(pIcObject->IcObjectType() != EIcObjectType::MERCENARY_BOMB)
+			continue;
+
+		vec2 IntersectPos;
+		if(closest_point_on_line(From, To, pObject->GetPos(), IntersectPos))
+		{
+			float Len = distance(pObject->GetPos(), IntersectPos);
+			const float DefaultMercBombRadius = 80.0f;
+			float LaserHitRadius = std::max(DefaultMercBombRadius, fx2f(pIcObject->GetSnapData1()));
+			if(Len < LaserHitRadius)
+			{
+				m_From = From;
+				m_Pos = IntersectPos;
+				m_Energy = -1;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	return false;
 }
 
 void CLaser::DoBounce()
