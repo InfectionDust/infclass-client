@@ -494,7 +494,7 @@ void CCharacter::FireWeapon()
 	case WEAPON_GRENADE:
 	{
 		int Lifetime = (int)(GameWorld()->GameTickSpeed() * GetTuning(GetOverriddenTuneZone())->m_GrenadeLifetime);
-
+		bool CreateProjectile = true;
 		bool Explosive = true;
 		if(GameWorld()->m_WorldConfig.m_IsInfClass)
 		{
@@ -505,8 +505,12 @@ void CCharacter::FireWeapon()
 				FireDelay = 250;
 				break;
 			case PLAYERCLASS_MEDIC:
-			case PLAYERCLASS_NINJA:
 			case PLAYERCLASS_SCIENTIST:
+				CreateProjectile = false;
+				Explosive = false;
+				FireDelay = 500;
+				break;
+			case PLAYERCLASS_NINJA:
 				Explosive = false;
 				FireDelay = 500;
 				break;
@@ -515,17 +519,20 @@ void CCharacter::FireWeapon()
 			}
 		}
 
-		new CProjectile(
-			GameWorld(),
-			WEAPON_GRENADE, //Type
-			GetCid(), //Owner
-			ProjStartPos, //Pos
-			Direction, //Dir
-			Lifetime, //Span
-			false, //Freeze
-			Explosive, // Explosive
-			SOUND_GRENADE_EXPLODE //SoundImpact
-		); //SoundImpact
+		if(CreateProjectile)
+		{
+			new CProjectile(
+				GameWorld(),
+				WEAPON_GRENADE, // Type
+				GetCid(), // Owner
+				ProjStartPos, // Pos
+				Direction, // Dir
+				Lifetime, // Span
+				false, // Freeze
+				Explosive, // Explosive
+				SOUND_GRENADE_EXPLODE // SoundImpact
+			);
+		}
 	}
 	break;
 
