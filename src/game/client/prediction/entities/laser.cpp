@@ -2,6 +2,8 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include "laser.h"
 #include "character.h"
+#include "ic_placed_object.h"
+
 #include <game/client/laser_data.h>
 #include <game/collision.h>
 #include <game/generated/protocol.h>
