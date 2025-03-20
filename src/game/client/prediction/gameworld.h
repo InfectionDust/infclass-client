@@ -29,6 +29,7 @@ public:
 		ENTTYPE_PICKUP,
 		ENTTYPE_FLAG,
 		ENTTYPE_CHARACTER,
+		ENTTYPE_IC_PLACED_OBJECT,
 		NUM_ENTTYPES
 	};
 
@@ -44,6 +45,15 @@ public:
 	CCharacter *IntersectCharacter(vec2 Pos0, vec2 Pos1, float Radius, vec2 &NewPos, const CCharacter *pNotThis = nullptr, int CollideWith = -1, const CCharacter *pThisOnly = nullptr);
 	CEntity *IntersectEntity(vec2 Pos0, vec2 Pos1, float Radius, int Type, vec2 &NewPos, const CEntity *pNotThis = nullptr, int CollideWith = -1, const CEntity *pThisOnly = nullptr);
 	void InsertEntity(CEntity *pEntity, bool Last = false);
+
+	/*
+		Function: destroy_entity
+			Destroys an entity in the world.
+
+		 Arguments:
+			 entity - Entity to destroy
+	 */
+	void DestroyEntity(CEntity *pEntity);
 	void RemoveEntity(CEntity *pEntity);
 	void RemoveCharacter(CCharacter *pChar);
 	void Tick();
@@ -56,8 +66,8 @@ public:
 	CCollision *m_pCollision;
 
 	// getter for server variables
-	int GameTick() { return m_GameTick; }
-	int GameTickSpeed() { return SERVER_TICK_SPEED; }
+	int GameTick() const { return m_GameTick; }
+	int GameTickSpeed() const { return SERVER_TICK_SPEED; }
 	CCollision *Collision() { return m_pCollision; }
 	CTeamsCore *Teams() { return &m_Teams; }
 	std::vector<SSwitchers> &Switchers() { return m_Core.m_vSwitchers; }
