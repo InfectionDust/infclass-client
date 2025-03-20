@@ -4,6 +4,7 @@
 #include "gameworld.h"
 #include "entities/character.h"
 #include "entities/dragger.h"
+#include "entities/ic_placed_object.h"
 #include "entities/laser.h"
 #include "entities/pickup.h"
 #include "entities/projectile.h"
@@ -12,6 +13,7 @@
 #include <game/client/laser_data.h>
 #include <game/client/pickup_data.h>
 #include <game/client/projectile_data.h>
+#include <game/generated/protocol.h>
 #include <game/mapbugs.h>
 #include <game/mapitems.h>
 
@@ -122,6 +124,11 @@ void CGameWorld::InsertEntity(CEntity *pEnt, bool Last)
 		}
 		pChar->SetCoreWorld(this);
 	}
+}
+
+void CGameWorld::DestroyEntity(CEntity *pEnt)
+{
+	pEnt->MarkForDestroy();
 }
 
 void CGameWorld::RemoveEntity(CEntity *pEnt)
@@ -549,7 +556,32 @@ void CGameWorld::NetObjAdd(int ObjId, int ObjType, const void *pObjData, const C
 	}
 	else if(ObjType == NETOBJTYPE_INFCLASSOBJECT)
 	{
+		const CNetObj_InfClassObject *pObject = static_cast<const CNetObj_InfClassObject *>(pObjData);
+		vec2 Pos(pObject->m_X, pObject->m_Y);
+		float Radius = fx2f(pObject->m_ProximityRadius);
+		EIcObjectType IcObjectType = GetIcObjectTypeFromInt(pObject->m_Type);
 
+		CIcPlacedObject NetObject(this, ObjId, IcObjectType, Pos, pObject->m_Owner, Radius);
+		if(pObject->m_Flags & INFCLASS_OBJECT_FLAG_HAS_SECOND_POSITION)
+		{
+			vec2 Pos2(pObject->m_X2, pObject->m_Y2);
+			NetObject.SetSecondPosition(Pos2);
+		}
+		NetObject.SetStartTick(pObject->m_StartTick);
+		NetObject.SetEndTick(pObject->m_EndTick);
+		NetObject.SetSnapData1(pObject->m_Data1);
+
+		CIcPlacedObject *pExisting = static_cast<CIcPlacedObject *>(GetEntity(ObjId, ENTTYPE_IC_PLACED_OBJECT));
+		if (pExisting && pExisting->Match(&NetObject))
+		{
+			pExisting->Keep();
+			pExisting->Read(NetObject);
+		}
+		else
+		{
+			CIcPlacedObject *pEnt = new CIcPlacedObject(NetObject);
+			InsertEntity(pEnt);
+		}
 	}
 }
 
@@ -632,6 +664,8 @@ void CGameWorld::CopyWorld(CGameWorld *pFrom)
 				pCopy = new CCharacter(*((CCharacter *)pEnt));
 			else if(Type == ENTTYPE_PICKUP)
 				pCopy = new CPickup(*((CPickup *)pEnt));
+			else if(Type == ENTTYPE_IC_PLACED_OBJECT)
+				pCopy = new CIcPlacedObject(*((CIcPlacedObject *)pEnt));
 			if(pCopy)
 			{
 				pCopy->m_pParent = pEnt;
