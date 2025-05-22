@@ -403,6 +403,7 @@ public:
 		}
 
 		// validate data sizes
+#ifdef VALIDATE_MAP_DATA_SIZES
 		if(m_Info.m_pDataSizes != nullptr)
 		{
 			for(int Index = 0; Index < m_Header.m_NumRawData; Index++)
@@ -411,6 +412,7 @@ public:
 				Check(Size > 0, "data size invalid. index=%d size=%d", Index, Size);
 			}
 		}
+#endif
 
 		return true;
 #undef Check
